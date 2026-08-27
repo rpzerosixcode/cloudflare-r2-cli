@@ -1,0 +1,56 @@
+# Configuração de estilo do projeto com o RuboCop.
+# Documentação: https://docs.rubocop.org/rubocop/configuration
+
+plugins:
+  - rubocop-rake
+
+AllCops:
+  NewCops: enable
+  SuggestExtensions: false
+  TargetRubyVersion: 3.0
+  Exclude:
+    - "vendor/**/*"
+    - "tmp/**/*"
+
+# Convenções do projeto -------------------------------------------------
+# O código-fonte utiliza indentação de 4 espaços.
+Layout/IndentationWidth:
+  Enabled: true
+  Width: 4
+
+Layout/IndentationConsistency:
+  EnforcedStyle: normal
+
+Layout/FirstArgumentIndentation:
+  EnforcedStyle: consistent
+
+Layout/FirstHashElementIndentation:
+  EnforcedStyle: consistent
+
+Layout/FirstArrayElementIndentation:
+  EnforcedStyle: consistent
+
+# Strings com aspas duplas, em linha com a convenção frozen_string_literal.
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: double_quotes
+
+# Permite o alinhamento de atribuições (ex.: r2.gemspec).
+Layout/ExtraSpacing:
+  AllowForAlignment: true
+
+# Fim de linha em LF para garantir a portabilidade da gem.
+Layout/EndOfLine:
+  EnforcedStyle: lf
+
+# As dependências de desenvolvimento são centralizadas no gemspec.
+Gemspec/DevelopmentDependencies:
+  Enabled: false
+
+# Classes "esqueleto" ainda não implementadas não geram avisos.
+Lint/EmptyClass:
+  Enabled: false
+Style/EmptyClassDefinition:
+  Enabled: false
