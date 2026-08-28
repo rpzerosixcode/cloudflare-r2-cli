@@ -53,6 +53,8 @@ O bucket padrão é `test-bucket` e pode ser alterado pela variável de ambiente
 
 Os testes devem cobrir os principais comportamentos, incluindo cenários de sucesso e erro.
 
+Os testes E2E são uma exceção: devem permanecer extremamente simples, focados apenas nos fluxos principais e nos resultados esperados, sem buscar cobertura exaustiva de cenários ou detalhes internos.
+
 ## Execução
 
 A suíte de testes pode ser executada com um único comando:
