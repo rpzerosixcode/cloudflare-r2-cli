@@ -59,6 +59,30 @@ module R2
             body&.close
         end
 
+        desc "delete ARQUIVO", "Exclui um arquivo do R2"
+
+        long_desc <<~LONGDESC
+            Exclui um arquivo do bucket do Cloudflare R2 configurado.
+
+            Exemplos:
+
+              $ r2 delete imagem.jpg
+        LONGDESC
+
+        # Exclui um arquivo do bucket do Cloudflare R2 configurado.
+        #
+        # A operação é considerada bem-sucedida quando o armazenamento
+        # conclui a solicitação sem erro.
+        #
+        # @param file [String] nome do arquivo a ser excluído
+        def delete(file)
+            storage.delete(key: file)
+            puts "Arquivo excluído com sucesso: #{file}"
+        rescue Errors::Error => e
+            warn "Erro: #{e.message}"
+            exit 1
+        end
+
         private
 
         # Abre o arquivo informado para leitura.

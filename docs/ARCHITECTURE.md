@@ -1,16 +1,5 @@
 # Arquitetura
 
-## Fluxo de Dados
-
-### Upload
-
-1. O usuário executa o comando `r2 upload <arquivo>`.
-2. A CLI valida o arquivo e o abre para leitura.
-3. A CLI delega o envio ao `Storage`, informando a chave e o conteúdo.
-4. O `Storage` envia o conteúdo ao Cloudflare R2 por meio da gem `aws-sdk-s3`.
-5. O `Storage` retorna a etag do objeto enviado.
-6. A CLI apresenta o resultado ao usuário.
-
 ## Estratégia de Testes
 
 > A definir durante o desenvolvimento.

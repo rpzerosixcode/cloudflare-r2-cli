@@ -34,9 +34,33 @@ Em caso de erro, a mensagem correspondente é exibida e a CLI é encerrada com c
 
 ### Delete
 
-Exclusão de arquivos armazenados no Cloudflare R2.
+Exclui um arquivo armazenado no bucket do Cloudflare R2 configurado.
 
-**Status:** Planejado.
+**Sintaxe:**
+
+```console
+$ r2 delete <arquivo>
+```
+
+**Exemplo:**
+
+```console
+$ r2 delete imagem.jpg
+```
+
+**Comportamento:**
+
+* Recebe o nome do arquivo a ser excluído.
+* Utiliza o nome do arquivo como chave do objeto.
+* Solicita a exclusão do objeto ao Cloudflare R2.
+* Considera a operação bem-sucedida quando o armazenamento conclui a solicitação sem erro.
+* Exibe uma mensagem de sucesso após a operação.
+
+A funcionalidade **não realiza uma consulta posterior para verificar se o objeto deixou de existir**. A confirmação de sucesso é baseada no resultado da operação de exclusão fornecido pela camada de armazenamento.
+
+Em caso de erro na operação, a mensagem correspondente é exibida e a CLI é encerrada com código de status diferente de zero.
+
+**Status:** Implementado.
 
 ### List
 

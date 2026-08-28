@@ -13,7 +13,6 @@ module R2
         # @param config [Configuration] configuração da aplicação
         def initialize(config)
             @bucket = config.bucket
-
             @s3 = Aws::S3::Client.new(
                 region: config.region,
                 access_key_id: config.access_key_id,
@@ -30,21 +29,32 @@ module R2
         #
         # @param key [String] chave do objeto no bucket
         # @param body [IO, String] conteúdo do objeto a ser enviado
-        # @return [String] etag do objeto enviado
         # @raise [Errors::Error] se a operação falhar
         def upload(key:, body:)
-            response = @s3.put_object(
+            @s3.put_object(
                 bucket: @bucket,
                 key: key,
                 body: body
             )
-
-            response.etag
         rescue StandardError => e
             raise Errors::Error, e.message
         end
 
-        def delete; end
+        # Exclui um objeto do bucket configurado.
+        #
+        # A operação é considerada bem-sucedida quando o Cloudflare R2
+        # conclui a solicitação sem lançar um erro.
+        #
+        # @param key [String] chave do objeto no bucket
+        # @raise [Errors::Error] se a operação falhar
+        def delete(key:)
+            @s3.delete_object(
+                bucket: @bucket,
+                key: key
+            )
+        rescue StandardError => e
+            raise Errors::Error, e.message
+        end
 
         def list; end
     end

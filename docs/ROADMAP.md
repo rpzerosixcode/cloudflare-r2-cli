@@ -30,6 +30,8 @@ Implementação e ampliação da cobertura de testes do projeto.
 
 Revisão, refinamento e estabilização do projeto.
 
+- **Portabilidade** — garantir o funcionamento da CLI em diferentes ambientes e sistemas operacionais.
+
 ### Fase 5 — Release
 
 Preparação da release e realização das revisões finais.
