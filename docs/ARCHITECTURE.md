@@ -2,7 +2,7 @@
 
 ## Estratégia de Testes
 
-> A definir durante o desenvolvimento.
+* [Testing](architecture/testing.md) — Estratégia e organização dos testes.
 
 ## Documentação
 
@@ -12,6 +12,7 @@
 * [Configuration](architecture/configuration.md) — Organização e gerenciamento das configurações da aplicação.
 * [Errors](architecture/errors.md) — Estratégia e organização do tratamento de erros.
 * [Storage](architecture/storage.md) — Organização da camada responsável pelo armazenamento e persistência.
+* [Testing](architecture/testing.md) — Estratégia e organização dos testes.
 
 ## Estrutura do projeto
 

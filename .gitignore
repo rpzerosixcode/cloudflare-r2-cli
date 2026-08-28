@@ -9,6 +9,9 @@ build/
 # Development and debug files
 .dev/
 
+# Temporary files
+/tmp/
+
 # Tools
 /.rubocop_cache/
 .rubocop-https*
