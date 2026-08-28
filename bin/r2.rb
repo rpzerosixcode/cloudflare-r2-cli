@@ -1,5 +1,8 @@
 #!/usr/bin/env ruby
+
 # frozen_string_literal: true
 
 require "bundler/setup"
 require "r2"
+
+R2::CLI.start(ARGV)

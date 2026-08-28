@@ -4,7 +4,7 @@
 
 As principais funcionalidades que deverão ser implementadas no MVP são:
 
-* **Upload** — envio de arquivos para o Cloudflare R2.
+* **Upload** — envio de arquivos para o Cloudflare R2. *(implementado)*
 * **Delete** — exclusão de arquivos armazenados no Cloudflare R2.
 * **List** — listagem de arquivos armazenados no Cloudflare R2.
 

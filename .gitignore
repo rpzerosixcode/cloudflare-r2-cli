@@ -6,6 +6,9 @@
 *.gem
 build/
 
+# Development and debug files
+.dev/
+
 # Tools
 /.rubocop_cache/
 .rubocop-https*
