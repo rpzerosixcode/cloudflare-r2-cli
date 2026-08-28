@@ -35,3 +35,12 @@ O MVP terá como foco:
 O versionamento formal **não será adotado durante o desenvolvimento do MVP**.
 
 A adoção do versionamento será iniciada a partir da versão **`1.0.0`**.
+
+## Injeção de Dependências
+
+As dependências dos componentes devem ser fornecidas preferencialmente por **injeção de dependência**, evitando acoplamento desnecessário às implementações.
+
+A aplicação não utilizará um container de injeção de dependências inicialmente. As dependências serão fornecidas diretamente pelos componentes que as utilizam.
+
+O uso de um container poderá ser **reavaliado futuramente**, caso o crescimento da aplicação torne sua adoção justificável.
+

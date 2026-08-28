@@ -1,9 +1,5 @@
 # Arquitetura
 
-## Fluxo de Dados
-
-> A definir durante o desenvolvimento.
-
 ## Estratégia de Testes
 
 > A definir durante o desenvolvimento.
