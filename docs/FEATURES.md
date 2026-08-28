@@ -64,6 +64,22 @@ Em caso de erro na operação, a mensagem correspondente é exibida e a CLI é e
 
 ### List
 
-Listagem de arquivos armazenados no Cloudflare R2.
+Lista os arquivos armazenados no bucket do Cloudflare R2 configurado.
 
-**Status:** Planejado.
+**Sintaxe:**
+
+```console id="zmjz6i"
+$ r2 list
+```
+
+**Comportamento:**
+
+* Consulta os objetos armazenados no bucket configurado.
+* Exibe os arquivos encontrados.
+* Não possui paginação ou controle da quantidade de objetos retornados durante o MVP.
+
+> **Nota:** Paginação e controle da quantidade de objetos retornados poderão ser implementados futuramente, caso sejam necessários.
+
+Em caso de erro na operação, a mensagem correspondente é exibida e a CLI é encerrada com código de status diferente de zero.
+
+**Status:** Implementado.
