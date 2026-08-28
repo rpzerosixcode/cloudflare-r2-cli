@@ -3,7 +3,7 @@
 require_relative "lib/r2/version"
 
 Gem::Specification.new do |spec|
-    spec.name                  = "r2"
+    spec.name                  = "cloudflare-r2-cli"
     spec.version               = R2::VERSION
     spec.authors               = ["rpzerosixcode"]
     spec.summary               = "CLI em Ruby para gerenciar objetos no Cloudflare R2."
