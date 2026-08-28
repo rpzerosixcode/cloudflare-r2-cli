@@ -2,10 +2,44 @@
 
 ## MVP
 
-As principais funcionalidades que deverão ser implementadas no MVP são:
+### Upload
 
-* **Upload** — envio de arquivos para o Cloudflare R2. *(implementado)*
-* **Delete** — exclusão de arquivos armazenados no Cloudflare R2.
-* **List** — listagem de arquivos armazenados no Cloudflare R2.
+Envia um arquivo para o bucket do Cloudflare R2 configurado.
 
-> **Nota:** Durante a implementação de cada funcionalidade, a documentação deverá ser atualizada para explicar seu uso, incluindo a sintaxe e as informações necessárias para sua utilização.
+**Sintaxe:**
+
+```console
+$ r2 upload <arquivo>
+```
+
+**Exemplos:**
+
+```console
+$ r2 upload imagem.jpg
+$ r2 upload ./imagens/foto.png
+```
+
+**Comportamento:**
+
+* Valida se o arquivo informado existe.
+* Valida se o caminho não corresponde a um diretório.
+* Abre o arquivo em modo de leitura binária.
+* Envia o conteúdo para o bucket configurado no Cloudflare R2.
+* Utiliza o nome do arquivo como chave do objeto no bucket.
+* Exibe uma mensagem de sucesso após o envio.
+
+Em caso de erro, a mensagem correspondente é exibida e a CLI é encerrada com código de status diferente de zero.
+
+**Status:** Implementado.
+
+### Delete
+
+Exclusão de arquivos armazenados no Cloudflare R2.
+
+**Status:** Planejado.
+
+### List
+
+Listagem de arquivos armazenados no Cloudflare R2.
+
+**Status:** Planejado.

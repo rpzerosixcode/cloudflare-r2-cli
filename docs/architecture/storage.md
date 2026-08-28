@@ -1,34 +1,18 @@
 # Armazenamento
 
-O armazenamento abstrai a comunicação com o Cloudflare R2, utilizando a gem
-`aws-sdk-s3`.
+O armazenamento abstrai a comunicação com o Cloudflare R2, utilizando a gem `aws-sdk-s3`.
 
 ## Dependências
 
-A gem `aws-sdk-s3` requer um parser XML para processar as respostas da API.
-O projeto depende de `rexml` para atender a esse requisito em tempo de
-execução.
-
-## Região
-
-O endpoint do Cloudflare R2 é compatível com S3 e exige a definição de uma
-região. A região é fornecida pela `Configuration` (via `R2_REGION`), usando o
-padrão `auto`, recomendado para o Cloudflare R2.
+A gem `aws-sdk-s3` requer um parser XML. O projeto utiliza `rexml` para atender esse requisito em tempo de execução.
 
 ## Responsabilidade
 
-A camada é responsável exclusivamente pelo **envio de imagens**, recebendo o
-conteúdo já preparado e entregando-o ao R2.
+A camada é responsável pela comunicação com o Cloudflare R2, recebendo os dados preparados pelas camadas superiores e executando as operações de armazenamento.
 
-## Operações
+## Região
 
-### Upload
-
-O método `upload` recebe a chave do objeto e o conteúdo e executa `put_object`
-no bucket configurado, retornando a **etag** do objeto enviado.
-
-Falhas na operação são abstraídas para `R2::Errors::Error`, evitando expor
-erros específicos da implementação.
+A região é fornecida pela `Configuration` por meio de `R2_REGION`, utilizando `auto` como padrão.
 
 ## Limites
 
@@ -40,17 +24,8 @@ A camada não deve:
 
 Essas responsabilidades pertencem às camadas que utilizam o armazenamento.
 
-## Configuração do Bucket
+## Configuração
 
-O bucket é definido na configuração do `Storage` e não é informado
-individualmente nas operações.
+O bucket é definido pela configuração do `Storage` e não é informado individualmente em cada operação.
 
-Essa abordagem atende ao MVP e poderá ser reavaliada futuramente caso uma
-configuração mais dinâmica proporcione uma experiência melhor ao usuário.
-
-## Nomeação dos Objetos
-
-No MVP, a chave do objeto é baseada no **nome do arquivo de origem**.
-
-Essa estratégia prioriza simplicidade e poderá ser substituída futuramente por
-uma abordagem mais refinada, caso necessário.
+Detalhes das funcionalidades e seu comportamento para o usuário são documentados em [FEATURES.md](../FEATURES.md).

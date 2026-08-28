@@ -10,26 +10,10 @@ A CLI atua como um **orquestrador mínimo**, coordenando as operações em alto 
 
 ## Limites
 
-A CLI não deve implementar regras de negócio, manipular diretamente imagens ou arquivos, nem conhecer detalhes das implementações ou serviços utilizados.
+A CLI não deve implementar regras de negócio, manipular diretamente arquivos ou conhecer detalhes das implementações e serviços utilizados.
 
-A execução dos detalhes deve ser delegada aos componentes responsáveis.
+A execução das operações deve ser delegada aos componentes responsáveis.
 
 ## Comandos
 
-### Upload
-
-O comando `upload` recebe o caminho de um arquivo e o envia ao bucket do Cloudflare R2 configurado.
-
-```console
-$ r2 upload imagem.jpg
-
-$ r2 upload ./imagens/foto.png
-```
-
-Comportamento:
-
-* Valida se o arquivo existe e se o caminho não é um diretório.
-* Abre o arquivo em modo de leitura binária e o fornece à camada de armazenamento.
-* No MVP, a chave do objeto no bucket é o nome do arquivo informado.
-
-Em caso de erro, a mensagem é exibida e a CLI é encerrada com código de status diferente de zero.
+Os comandos disponíveis e seus comportamentos são documentados em [FEATURES.md](../FEATURES.md).
