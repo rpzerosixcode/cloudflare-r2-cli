@@ -8,8 +8,6 @@ module R2
   # Atua como um orquestrador mínimo: interpreta as entradas do usuário,
   # delega a execução aos componentes responsáveis e apresenta os resultados.
   class CLI < Thor
-    default_command :upload
-
     # Inicializa a CLI com suas dependências.
     #
     # @param configuration [Configuration] configuração da aplicação
