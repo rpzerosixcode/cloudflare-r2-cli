@@ -20,7 +20,6 @@ module R2
             storage: Storage.new(configuration)
         )
             super(*args)
-
             @configuration = configuration
             @storage = storage
         end
@@ -35,12 +34,12 @@ module R2
 
         long_desc <<~LONGDESC
             Envia uma imagem para o bucket do Cloudflare R2 configurado.
-
             A chave do objeto no bucket será o nome do arquivo informado.
 
             Exemplos:
 
               $ r2 upload imagem.jpg
+
               $ r2 upload ./imagens/foto.png
         LONGDESC
 
@@ -51,9 +50,7 @@ module R2
         # @param file [String] caminho do arquivo a ser enviado
         def upload(file)
             body = open_file(file)
-
-            etag = storage.upload(key: File.basename(file), body: body)
-
+            storage.upload(key: File.basename(file), body: body)
             puts "Imagem enviada com sucesso: #{File.basename(file)}"
         rescue Errors::Error => e
             warn "Erro: #{e.message}"
@@ -75,7 +72,6 @@ module R2
         # @raise [Errors::Error] se o arquivo não existir ou não for um arquivo
         def open_file(file)
             raise Errors::Error, "Arquivo não encontrado: #{file}" unless File.exist?(file)
-
             raise Errors::Error, "O caminho informado não é um arquivo: #{file}" unless File.file?(file)
 
             File.open(file, "rb")
