@@ -54,3 +54,8 @@ Lint/EmptyClass:
   Enabled: false
 Style/EmptyClassDefinition:
   Enabled: false
+
+# Os testes são estruturados em blocos de responsabilidade (RSpec).
+Metrics/BlockLength:
+  Exclude:
+    - "spec/**/*"
