@@ -41,6 +41,9 @@ Style/StringLiteralsInInterpolation:
 Layout/ExtraSpacing:
   AllowForAlignment: true
 
+# Fim de linha em LF para garantir a portabilidade da gem.
+Layout/EndOfLine:
+  EnforcedStyle: lf
 
 # As dependências de desenvolvimento são centralizadas no gemspec.
 Gemspec/DevelopmentDependencies:
