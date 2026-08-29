@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        ruby: ["3.2", "3.3"]
+        ruby: ["3.3"]
 
     steps:
       - name: Checkout
@@ -26,7 +26,6 @@ jobs:
           bundler-cache: true
 
       - name: Estilo (RuboCop)
-        if: matrix.ruby == '3.3'
         run: bundle exec rubocop
 
       - name: Testes de unidade e integração
