@@ -2,9 +2,9 @@ PATH
   remote: .
   specs:
     cloudflare-r2-cli (0.0.0)
-      aws-sdk-s3 (>= 1.0.0)
-      rexml (>= 3.0)
-      thor (>= 1.0.0)
+      aws-sdk-s3 (~> 1.229.0)
+      rexml (~> 3.4.4)
+      thor (~> 1.5.0)
 
 GEM
   remote: https://rubygems.org/
@@ -92,9 +92,9 @@ PLATFORMS
 
 DEPENDENCIES
   cloudflare-r2-cli!
-  rake (~> 13.0)
+  rake (~> 13.4)
   rspec (~> 3.13)
-  rubocop (~> 1.0)
+  rubocop (~> 1.90)
   rubocop-rake (~> 0.7)
 
 CHECKSUMS

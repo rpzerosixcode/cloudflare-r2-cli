@@ -20,13 +20,13 @@ Gem::Specification.new do |spec|
     spec.executables   = spec.files.grep(%r{\Abin/}) { |file| File.basename(file) }
     spec.require_paths = ["lib"]
 
-    spec.add_dependency "aws-sdk-s3", ">= 1.0.0"
-    spec.add_dependency "rexml", ">= 3.0"
-    spec.add_dependency "thor", ">= 1.0.0"
+    spec.add_dependency "aws-sdk-s3", "~> 1.229.0"
+    spec.add_dependency "rexml", "~> 3.4.4"
+    spec.add_dependency "thor", "~> 1.5.0"
 
-    spec.add_development_dependency "rake", "~> 13.0"
+    spec.add_development_dependency "rake", "~> 13.4"
     spec.add_development_dependency "rspec", "~> 3.13"
-    spec.add_development_dependency "rubocop", "~> 1.0"
+    spec.add_development_dependency "rubocop", "~> 1.90"
     spec.add_development_dependency "rubocop-rake", "~> 0.7"
     spec.metadata["rubygems_mfa_required"] = "true"
 end
