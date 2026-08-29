@@ -14,11 +14,11 @@ module R2
         # @param configuration [Configuration] configuração da aplicação
         # @param storage [Storage] armazenamento usado nas operações com objetos
         def initialize(
-            *args,
+            *,
             configuration: Configuration.new,
             storage: Storage.new(configuration)
         )
-            super(*args)
+            super(*)
             @configuration = configuration
             @storage = storage
         end

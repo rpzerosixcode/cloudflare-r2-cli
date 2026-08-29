@@ -1,3 +1,6 @@
-# Fim de linha LF para todos os arquivos de texto.
-# Garante consistência entre sistemas operacionais (portabilidade).
-* text=auto eol=lf
+* text=auto
+*.rb text eol=lf
+*.gemspec text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.md text eol=lf

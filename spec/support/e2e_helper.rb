@@ -63,7 +63,7 @@ module E2EHelper
     # O carregamento via `-rbundler/setup` garante que as dependências do
     # projeto estejam ativas, já que o binário empacotado não depende do
     # Bundler (portabilidade da gem instalada).
-    def run_cli(*args, env: {})
+    def run_cli(*, env: {})
         load_test_env!
         ensure_required_env!
 
@@ -72,7 +72,7 @@ module E2EHelper
             RbConfig.ruby,
             "-rbundler/setup",
             BIN,
-            *args,
+            *,
             chdir: ROOT
         )
     end
