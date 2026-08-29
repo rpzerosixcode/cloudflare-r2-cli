@@ -5,6 +5,7 @@
 # Build and packaging artifacts
 *.gem
 build/
+/pkg/
 
 # Development and debug files
 .dev/

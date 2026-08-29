@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "errors"
+
 module R2
     # Configuração centralizada da aplicação.
     #
@@ -17,14 +19,28 @@ module R2
         # `R2_REGION` é opcional e, quando ausente, assume o valor padrão
         # `auto`, recomendado para endpoints do Cloudflare R2.
         #
-        # Lança `KeyError` quando alguma das variáveis obrigatórias não estiver
-        # definida.
+        # @raise [Errors::ConfigurationError] quando alguma variável
+        #   obrigatória não está definida
         def initialize
-            @access_key_id = ENV.fetch("R2_ACCESS_KEY_ID")
-            @secret_access_key = ENV.fetch("R2_SECRET_ACCESS_KEY")
-            @endpoint = ENV.fetch("R2_ENDPOINT")
-            @bucket = ENV.fetch("R2_BUCKET")
+            @access_key_id = fetch_required("R2_ACCESS_KEY_ID")
+            @secret_access_key = fetch_required("R2_SECRET_ACCESS_KEY")
+            @endpoint = fetch_required("R2_ENDPOINT")
+            @bucket = fetch_required("R2_BUCKET")
             @region = ENV.fetch("R2_REGION", "auto")
+        end
+
+        private
+
+        # Obtém o valor de uma variável de ambiente obrigatória.
+        #
+        # @param name [String] nome da variável de ambiente
+        # @return [String] valor da variável
+        # @raise [Errors::ConfigurationError] se a variável não estiver definida
+        def fetch_required(name)
+            ENV.fetch(name) do
+                raise Errors::ConfigurationError,
+                      "Variável de ambiente obrigatória não definida: #{name}"
+            end
         end
     end
 end

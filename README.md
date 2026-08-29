@@ -2,9 +2,27 @@
 
 CLI em Ruby para gerenciar objetos no Cloudflare R2 pelo terminal.
 
+## Requisitos
+
+* Ruby **3.0** ou superior.
+
 ## Instalação
 
-> A definir durante o desenvolvimento.
+### A partir de uma gem publicada
+
+```console
+$ gem install cloudflare-r2-cli
+```
+
+### A partir do código-fonte
+
+```console
+$ git clone https://github.com/rpzerosixcode/cloudflare-r2-cli.git
+$ cd cloudflare-r2-cli
+$ bundle install
+$ bundle exec rake build
+$ gem install pkg/cloudflare-r2-cli-0.0.0.gem
+```
 
 ## Uso
 
@@ -22,6 +40,10 @@ Antes de usar o CLI, defina as variáveis de ambiente necessárias:
 
 Um modelo preenchível está disponível em [`.env.example`](.env.example).
 
+As credenciais são lidas apenas de variáveis de ambiente e nunca devem ser
+inseridas em código ou em arquivos versionados. Consulte
+[`docs/SECURITY.md`](docs/SECURITY.md) para mais detalhes.
+
 ### Upload
 
 Envia uma imagem para o bucket configurado:
@@ -32,7 +54,53 @@ $ r2 upload ./imagens/foto.png
 ```
 
 A chave do objeto no bucket será o nome do arquivo informado. Em caso de
-sucesso, a etag do objeto enviado é exibida.
+sucesso, uma mensagem de confirmação é exibida.
+
+### Delete
+
+Exclui um arquivo armazenado no bucket configurado:
+
+```console
+$ r2 delete imagem.jpg
+```
+
+A operação é confirmada pelo resultado da exclusão retornado pelo serviço.
+
+### List
+
+Lista os arquivos armazenados no bucket configurado:
+
+```console
+$ r2 list
+```
+
+Em qualquer erro, a CLI exibe a mensagem correspondente na saída de erro e
+encerra com código de status `1`.
+
+## Desenvolvimento
+
+As diretrizes de desenvolvimento, branches e commits estão descritas em
+[`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md).
+
+### Testes
+
+Executar toda a suíte (unidade, integração e E2E):
+
+```console
+$ bundle exec rake
+```
+
+Executar apenas um nível:
+
+```console
+$ bundle exec rake unit
+$ bundle exec rake integration
+$ bundle exec rake e2e
+```
+
+Os testes E2E exigem credenciais reais do Cloudflare R2, fornecidas pelo
+arquivo `.env` ou pelo ambiente. Sem elas, os cenários são marcados como
+pendentes (`pending`) e não falham.
 
 ## Documentação
 

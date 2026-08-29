@@ -45,10 +45,13 @@ RSpec.describe R2::Configuration do
 
         context "quando uma variável obrigatória está ausente" do
             %w[R2_ACCESS_KEY_ID R2_SECRET_ACCESS_KEY R2_ENDPOINT R2_BUCKET].each do |variable|
-                it "lança KeyError quando #{variable} não está definida" do
+                it "levanta Errors::ConfigurationError quando #{variable} não está definida" do
                     with_r2_env(valid_env.reject { |key, _value| key == variable }) do
                         expect { described_class.new }
-                            .to raise_error(KeyError, /#{Regexp.escape(variable)}/)
+                            .to raise_error(
+                                R2::Errors::ConfigurationError,
+                                /#{Regexp.escape(variable)}/
+                            )
                     end
                 end
             end

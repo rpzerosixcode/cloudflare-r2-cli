@@ -9,6 +9,7 @@ Gem::Specification.new do |spec|
     spec.summary               = "CLI em Ruby para gerenciar objetos no Cloudflare R2."
     spec.description           = "Ferramenta de linha de comando em Ruby para gerenciar " \
                                  "objetos no Cloudflare R2 diretamente pelo terminal."
+    spec.homepage              = "https://github.com/rpzerosixcode/cloudflare-r2-cli"
     spec.license               = "MIT"
     spec.required_ruby_version = Gem::Requirement.new(">= 3.0.0")
 

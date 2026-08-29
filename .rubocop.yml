@@ -59,3 +59,13 @@ Style/EmptyClassDefinition:
 Metrics/BlockLength:
   Exclude:
     - "spec/**/*"
+
+# Módulos de suporte aos testes concentram utilitários de cenário.
+Metrics/ModuleLength:
+  Exclude:
+    - "spec/**/*"
+
+# Métodos com múltiplas cláusulas de conversão de erros podem ser
+# ligeiramente mais longos.
+Metrics/MethodLength:
+  Max: 15

@@ -68,7 +68,7 @@ Lista os arquivos armazenados no bucket do Cloudflare R2 configurado.
 
 **Sintaxe:**
 
-```console id="zmjz6i"
+```console
 $ r2 list
 ```
 

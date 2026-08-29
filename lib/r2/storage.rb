@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "aws-sdk-s3"
+require_relative "errors"
 
 module R2
     # Camada de armazenamento responsável pela comunicação com o Cloudflare R2.
@@ -37,7 +38,7 @@ module R2
                 body: body
             )
         rescue StandardError => e
-            raise Errors::Error, e.message
+            raise_storage_error(e)
         end
 
         # Exclui um objeto do bucket configurado.
@@ -53,7 +54,7 @@ module R2
                 key: key
             )
         rescue StandardError => e
-            raise Errors::Error, e.message
+            raise_storage_error(e)
         end
 
         # Lista os objetos armazenados no bucket configurado.
@@ -64,7 +65,30 @@ module R2
             response = @s3.list_objects_v2(bucket: @bucket)
             response.contents.map(&:key)
         rescue StandardError => e
-            raise Errors::Error, e.message
+            raise_storage_error(e)
+        end
+
+        private
+
+        # Converte erros da camada de armazenamento em erros de domínio do
+        # projeto, evitando expor detalhes internos das implementações.
+        #
+        # A mensagem original é preservada quando útil.
+        #
+        # @param error [StandardError] erro original
+        # @raise [Errors::Error] subclasse correspondente à causa do erro
+        def raise_storage_error(error)
+            case error
+            when Aws::Errors::MissingCredentialsError
+                raise Errors::ConfigurationError,
+                      "Variáveis de ambiente de credenciais ausentes ou inválidas."
+            when Aws::S3::Errors::NoSuchBucket
+                raise Errors::BucketNotFoundError, "Bucket não encontrado: #{@bucket}"
+            when Seahorse::Client::NetworkingError
+                raise Errors::NetworkError, error.message
+            else
+                raise Errors::StorageError, error.message
+            end
         end
     end
 end
