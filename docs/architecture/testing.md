@@ -1,74 +1,44 @@
 # Testes
 
-Cada tipo de teste possui uma pasta própria, mantendo seus objetivos e responsabilidades separados.
+Cada tipo de teste possui uma pasta própria, mantendo objetivos e responsabilidades separados.
 
 ## Testes Unitários
 
-Localizados em:
-
-```text
-spec/unit/
-```
+Localizados em `spec/unit/`.
 
 Testam componentes isoladamente.
 
 ## Testes de Integração
 
-Localizados em:
-
-```text
-spec/integration/
-```
+Localizados em `spec/integration/`.
 
 Testam a interação entre componentes.
 
 ## Testes E2E
 
-Localizados em:
+Localizados em `spec/e2e/`.
 
-```text
-spec/e2e/
-```
+Focam nos fluxos principais e resultados esperados, mantendo os cenários simples e sem testar detalhes internos.
 
-Focam em comportamentos simples e diretos, verificando apenas se os fluxos funcionam ou não.
+## Ambiente
 
-* Verificar fluxos principais.
-* Validar resultados esperados.
-* Manter cenários simples.
-* Evitar detalhes internos.
+Os testes utilizam exclusivamente o bucket `test-bucket`, configurável por `R2_TEST_BUCKET`.
 
-## Ambiente de Testes
+Arquivos temporários devem permanecer em `tmp/`, que deve estar no `.gitignore`.
 
-Os dados utilizados nos testes serão armazenados exclusivamente no bucket `test-bucket`, mantendo-os isolados do ambiente de produção.
+Os recursos criados pelos testes devem ser limpos ao final da execução sempre que possível. Os testes E2E removem os objetos enviados ao final de cada cenário.
 
-Os testes também podem gerar arquivos temporários localmente. Esses arquivos devem permanecer exclusivamente em `tmp/`, não sendo criados ou mantidos de forma aberta na estrutura do projeto.
-
-O diretório `tmp/` deve ser ignorado pelo `.gitignore`, garantindo que arquivos temporários, artefatos de execução e outros resíduos gerados pelos testes não sejam versionados.
-
-Os recursos utilizados pelos testes devem ser limpos ao final da execução sempre que houver suporte adequado para isso. A limpeza deve utilizar as ferramentas e recursos já disponíveis no projeto, evitando a introdução de mecanismos adicionais sem necessidade.
-
-Os testes E2E também removem do bucket de testes, ao final de cada cenário, os objetos enviados durante o teste, utilizando a própria camada de armazenamento do projeto.
-
-O bucket padrão é `test-bucket` e pode ser alterado pela variável de ambiente `R2_TEST_BUCKET`.
+As credenciais podem ser fornecidas pelo `.env` ou pelo ambiente.
 
 ## Cobertura
 
 Os testes devem cobrir os principais comportamentos, incluindo cenários de sucesso e erro.
 
-Os testes E2E são uma exceção: devem permanecer extremamente simples, focados apenas nos fluxos principais e nos resultados esperados, sem buscar cobertura exaustiva de cenários ou detalhes internos.
+Os testes E2E são uma exceção: devem permanecer extremamente simples e focados apenas nos fluxos principais.
 
 ## Execução
 
-A suíte de testes pode ser executada com um único comando:
+Executar toda a suíte:
 
 ```console
 $ bundle exec rake
-```
-
-Para executar apenas os testes E2E:
-
-```console
-$ bundle exec rake e2e
-```
-
-Os testes utilizam as credenciais do arquivo `.env` ou do ambiente e operam exclusivamente no bucket de testes.
