@@ -6,37 +6,10 @@ on:
   pull_request:
 
 jobs:
-  verify:
-    name: Verificação (${{ matrix.os }} / Ruby ${{ matrix.ruby }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        ruby: ["3.3"]
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: ${{ matrix.ruby }}
-          bundler-cache: true
-
-      - name: Estilo (RuboCop)
-        run: bundle exec rubocop
-
-      - name: Testes de unidade e integração
-        run: bundle exec rspec spec/unit spec/integration
-
-      - name: Empacotamento
-        run: bundle exec rake build
-
-  e2e:
-    name: E2E (Cloudflare R2)
+  ci:
+    name: CI
     runs-on: ubuntu-latest
+
     env:
       R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
       R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
@@ -54,5 +27,11 @@ jobs:
           ruby-version: "3.3"
           bundler-cache: true
 
-      - name: Testes E2E
-        run: bundle exec rspec spec/e2e
+      - name: Lint
+        run: bundle exec rubocop
+
+      - name: Tests
+        run: bundle exec rspec spec/unit spec/integration spec/e2e
+
+      - name: Build
+        run: bundle exec rake build
