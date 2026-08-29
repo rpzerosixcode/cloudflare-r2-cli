@@ -4,6 +4,7 @@ require "base64"
 require "fileutils"
 require "open3"
 require "rbconfig"
+require "r2"
 require "securerandom"
 
 # Suporte aos testes E2E.
@@ -15,6 +16,15 @@ module E2EHelper
   BIN = File.join(ROOT, "bin", "r2").freeze
   ENV_FILE = File.join(ROOT, ".env").freeze
   TEST_BUCKET = ENV.fetch("R2_TEST_BUCKET", "test-bucket").freeze
+
+  # Configuração mínima usada na limpeza dos objetos externos.
+  CLEANUP_CONFIG = Struct.new(
+    :bucket,
+    :region,
+    :access_key_id,
+    :secret_access_key,
+    :endpoint
+  )
 
   REQUIRED_VARS = %w[
     R2_ACCESS_KEY_ID
@@ -75,12 +85,53 @@ module E2EHelper
     path = File.join(dir, "#{prefix}-#{SecureRandom.hex(4)}.jpg")
     File.binwrite(path, JPEG_1X1)
 
+    tracked_files << path
+
     path
   end
 
   # Remove os arquivos temporários criados durante os testes.
   def cleanup_temp_files!
     FileUtils.rm_rf(File.join(ROOT, "tmp", "e2e"))
+  end
+
+  # Remove do bucket de testes os objetos enviados durante os testes.
+  #
+  # Considera que cada arquivo criado por `create_temp_file` é enviado pelo
+  # comando `upload`, usando o nome do arquivo como chave do objeto no bucket.
+  #
+  # A limpeza é tolerante a falhas: erros de rede ou de credenciais apenas
+  # registram um aviso, evitando que a limpeza faça um cenário já validado
+  # ser marcado como falha.
+  def cleanup_external_data!
+    keys = tracked_files.map { |path| File.basename(path) }.uniq
+    return if keys.empty?
+
+    keys.each { |key| external_storage.delete(key: key) }
+  rescue StandardError => e
+    warn "Aviso: não foi possível limpar os objetos externos do bucket de testes: #{e.message}"
+  ensure
+    tracked_files.clear
+  end
+
+  # Caminhos dos arquivos criados durante os testes ainda não limpos.
+  def tracked_files
+    @tracked_files ||= []
+  end
+
+  # Armazenamento usado na limpeza dos objetos externos.
+  #
+  # Sempre direcionado ao bucket de testes, isolado do ambiente de produção.
+  def external_storage
+    config = CLEANUP_CONFIG.new(
+      TEST_BUCKET,
+      ENV.fetch("R2_REGION", "auto"),
+      ENV.fetch("R2_ACCESS_KEY_ID"),
+      ENV.fetch("R2_SECRET_ACCESS_KEY"),
+      ENV.fetch("R2_ENDPOINT")
+    )
+
+    R2::Storage.new(config)
   end
 
   # Aplica uma linha do arquivo `.env` ao ambiente, quando válida.

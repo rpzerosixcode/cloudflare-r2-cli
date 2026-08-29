@@ -45,7 +45,9 @@ Os testes também podem gerar arquivos temporários localmente. Esses arquivos d
 
 O diretório `tmp/` deve ser ignorado pelo `.gitignore`, garantindo que arquivos temporários, artefatos de execução e outros resíduos gerados pelos testes não sejam versionados.
 
-A limpeza do bucket e as ferramentas relacionadas serão implementadas quando houver necessidade real e recursos mínimos adequados para isso. Até então, os dados permanecerão isolados no ambiente de testes.
+Os recursos utilizados pelos testes devem ser limpos ao final da execução sempre que houver suporte adequado para isso. A limpeza deve utilizar as ferramentas e recursos já disponíveis no projeto, evitando a introdução de mecanismos adicionais sem necessidade.
+
+Os testes E2E também removem do bucket de testes, ao final de cada cenário, os objetos enviados durante o teste, utilizando a própria camada de armazenamento do projeto.
 
 O bucket padrão é `test-bucket` e pode ser alterado pela variável de ambiente `R2_TEST_BUCKET`.
 

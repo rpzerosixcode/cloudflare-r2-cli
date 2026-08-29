@@ -5,6 +5,7 @@ RSpec.describe "R2 CLI", type: :e2e do
 
   after do
     cleanup_temp_files!
+    cleanup_external_data!
   end
 
   describe "upload" do
