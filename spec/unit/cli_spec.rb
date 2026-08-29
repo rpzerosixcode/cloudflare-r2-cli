@@ -19,6 +19,22 @@ RSpec.describe R2::CLI do
         end
     end
 
+    describe ".start" do
+        include EnvHelper
+
+        context "quando o ambiente não está configurado" do
+            it "exibe uma mensagem de erro clara e encerra com código de status 1" do
+                with_r2_env({}) do
+                    expect { described_class.start(%w[list]) }
+                        .to output(
+                            /Erro: Variável de ambiente obrigatória não definida: R2_ACCESS_KEY_ID/
+                        ).to_stderr
+                        .and raise_error(SystemExit) { |error| expect(error.status).to eq(1) }
+                end
+            end
+        end
+    end
+
     describe "#upload" do
         let(:file) { create_temp_file(prefix: "upload") }
         let(:key) { File.basename(file) }

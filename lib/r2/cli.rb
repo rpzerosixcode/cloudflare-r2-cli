@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "thor"
+require_relative "errors"
 
 module R2
     # Interface de linha de comando do projeto.
@@ -13,11 +14,11 @@ module R2
         # @param configuration [Configuration] configuração da aplicação
         # @param storage [Storage] armazenamento usado nas operações com objetos
         def initialize(
-            *args,
+            *,
             configuration: Configuration.new,
             storage: Storage.new(configuration)
         )
-            super(*args)
+            super(*)
             @configuration = configuration
             @storage = storage
         end
@@ -26,6 +27,19 @@ module R2
         # quando uma operação falhar.
         def self.exit_on_failure?
             true
+        end
+
+        # Inicia a CLI e apresenta de forma clara erros de domínio não
+        # tratados pelos comandos.
+        #
+        # Erros lançados antes da execução de um comando (como configuração
+        # ausente) são capturados aqui, exibidos na saída de erro e encerram a
+        # CLI com código de status 1, evitando rastreamentos de pilha.
+        def self.start(*args)
+            super
+        rescue Errors::Error => e
+            warn "Erro: #{e.message}"
+            exit 1
         end
 
         desc "upload ARQUIVO", "Envia uma imagem para o R2"
@@ -115,12 +129,17 @@ module R2
         #
         # @param file [String] caminho do arquivo
         # @return [File] arquivo aberto no modo de leitura binária
-        # @raise [Errors::Error] se o arquivo não existir ou não for um arquivo
+        # @raise [Errors::FileNotFoundError] se o arquivo não existir
+        # @raise [Errors::InvalidFileError] se o caminho não for um arquivo
+        # @raise [Errors::PermissionError] se o arquivo não puder ser lido
         def open_file(file)
-            raise Errors::Error, "Arquivo não encontrado: #{file}" unless File.exist?(file)
-            raise Errors::Error, "O caminho informado não é um arquivo: #{file}" unless File.file?(file)
+            raise Errors::FileNotFoundError, "Arquivo não encontrado: #{file}" unless File.exist?(file)
+            raise Errors::InvalidFileError, "O caminho informado não é um arquivo: #{file}" unless File.file?(file)
+            raise Errors::PermissionError, "Sem permissão para ler o arquivo: #{file}" unless File.readable?(file)
 
             File.open(file, "rb")
+        rescue Errno::EACCES, Errno::EPERM
+            raise Errors::PermissionError, "Sem permissão para ler o arquivo: #{file}"
         end
 
         attr_reader :configuration, :storage

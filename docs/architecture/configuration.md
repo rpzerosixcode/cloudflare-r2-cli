@@ -14,6 +14,9 @@ As variáveis obrigatórias são `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`,
 A variável `R2_REGION` é opcional e, quando ausente, usa o valor padrão `auto`,
 recomendado para o Cloudflare R2.
 
+Quando uma variável obrigatória está ausente, a `Configuration` levanta
+`R2::Errors::ConfigurationError` com uma mensagem indicando a variável.
+
 ## Evolução
 
 A origem das configurações poderá ser diversificada futuramente caso surja uma necessidade real.

@@ -1,6 +1,6 @@
 # Decisões
 
-*>* **Nota:** Decisões técnicas específicas de implementação e código não serão abordadas neste documento. Esses assuntos serão registrados e acompanhados em arquivos específicos, conforme a evolução do projeto.
+> **Nota:** Decisões técnicas específicas de implementação e código não serão abordadas neste documento. Esses assuntos serão registrados e acompanhados em arquivos específicos, conforme a evolução do projeto.
 
 ## Nome
 

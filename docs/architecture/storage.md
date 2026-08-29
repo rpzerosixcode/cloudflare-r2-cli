@@ -29,3 +29,12 @@ Essas responsabilidades pertencem às camadas que utilizam o armazenamento.
 O bucket é definido pela configuração do `Storage` e não é informado individualmente em cada operação.
 
 Detalhes das funcionalidades e seu comportamento para o usuário são documentados em [FEATURES.md](../FEATURES.md).
+
+## Erros
+
+As falhas do cliente são convertidas para a hierarquia de `R2::Errors`:
+
+* `Errors::ConfigurationError` — credenciais de acesso ausentes ou inválidas.
+* `Errors::BucketNotFoundError` — bucket configurado inexistente.
+* `Errors::NetworkError` — falha de rede na comunicação.
+* `Errors::StorageError` — demais falhas da camada de armazenamento.
