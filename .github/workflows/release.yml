@@ -1,0 +1,79 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    name: Validate
+    runs-on: ubuntu-latest
+
+    env:
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+      R2_REGION: ${{ secrets.R2_REGION }}
+      R2_TEST_BUCKET: ${{ secrets.R2_TEST_BUCKET }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+
+      - name: Lint
+        run: bundle exec rubocop
+
+      - name: Tests
+        run: bundle exec rspec spec/unit spec/integration spec/e2e
+
+      - name: Build
+        run: bundle exec rake build
+
+  publish:
+    name: Publish
+    needs: validate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+
+      - name: Verify version matches the tag
+        run: |
+          version=$(ruby -e 'require_relative "lib/r2/version"; print R2::VERSION')
+          if [ "$version" != "${GITHUB_REF_NAME#v}" ]; then
+            echo "Version in lib/r2/version.rb ($version) does not match the tag (${GITHUB_REF_NAME#v})."
+            exit 1
+          fi
+
+      - name: Build the gem
+        run: bundle exec rake build
+
+      - name: Publish to RubyGems
+        env:
+          GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
+        run: gem push pkg/cloudflare-r2-cli-${GITHUB_REF_NAME#v}.gem
+
+      - name: Create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >
+          gh release create "$GITHUB_REF_NAME" pkg/cloudflare-r2-cli-${GITHUB_REF_NAME#v}.gem
+          --title "cloudflare-r2-cli ${GITHUB_REF_NAME}"
+          --notes "See the [changelog](https://github.com/rpzerosixcode/cloudflare-r2-cli/blob/main/CHANGELOG.md) for details."

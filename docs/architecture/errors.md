@@ -1,25 +1,25 @@
-# Erros
+# Errors
 
-Os erros são centralizados para padronizar seu tratamento e manter o
-comportamento da aplicação consistente.
+Errors are centralized to standardize their handling and keep the application
+behavior consistent.
 
-## Hierarquia
+## Hierarchy
 
-Todos os erros de domínio herdam de `R2::Errors::Error`:
+All domain errors inherit from `R2::Errors::Error`:
 
-* `ConfigurationError` — configuração obrigatória ausente ou inválida.
-* `FileNotFoundError` — o arquivo informado não existe.
-* `InvalidFileError` — o caminho informado não corresponde a um arquivo.
-* `PermissionError` — sem permissão para ler o arquivo informado.
-* `BucketNotFoundError` — o bucket configurado não existe.
-* `NetworkError` — falha de rede na comunicação com o Cloudflare R2.
-* `StorageError` — falha não classificada na camada de armazenamento.
+* `ConfigurationError` — required configuration missing or invalid.
+* `FileNotFoundError` — the given file does not exist.
+* `InvalidFileError` — the given path is not a file.
+* `PermissionError` — no permission to read the given file.
+* `BucketNotFoundError` — the configured bucket does not exist.
+* `NetworkError` — network failure while communicating with Cloudflare R2.
+* `StorageError` — unclassified failure in the storage layer.
 
-## Tratamento
+## Handling
 
-As exceções específicas das implementações são convertidas para a hierarquia
-de `R2::Errors`, evitando expor detalhes internos das bibliotecas e permitindo
-que consumidores capturem o erro genérico ou um erro específico.
+The specific exceptions of the implementations are converted to the
+`R2::Errors` hierarchy, avoiding exposing internal details of the libraries
+and allowing consumers to catch the generic error or a specific error.
 
-A CLI captura `R2::Errors::Error`, apresenta a mensagem na saída de erro e
-encerra com código de status diferente de zero.
+The CLI catches `R2::Errors::Error`, presents the message on the error output
+and exits with a non-zero status code.

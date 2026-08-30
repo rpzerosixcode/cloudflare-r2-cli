@@ -1,41 +1,41 @@
 # frozen_string_literal: true
 
 module R2
-    # Centralização dos erros do projeto.
+    # Centralization of project errors.
     module Errors
-        # Erro base do projeto.
+        # Base error of the project.
         #
-        # Todos os erros de domínio herdam desta classe, permitindo que
-        # consumidores capturem o erro genérico quando não precisam
-        # distinguir a causa, ou um erro específico quando precisam.
+        # All domain errors inherit from this class, allowing consumers to
+        # catch the generic error when they do not need to distinguish the
+        # cause, or a specific error when they do.
         class Error < StandardError
         end
 
-        # Configuração obrigatória ausente ou inválida.
+        # Required configuration missing or invalid.
         class ConfigurationError < Error
         end
 
-        # O arquivo informado não existe.
+        # The given file does not exist.
         class FileNotFoundError < Error
         end
 
-        # O caminho informado não corresponde a um arquivo.
+        # The given path is not a file.
         class InvalidFileError < Error
         end
 
-        # Sem permissão para ler o arquivo informado.
+        # No permission to read the given file.
         class PermissionError < Error
         end
 
-        # O bucket configurado não existe.
+        # The configured bucket does not exist.
         class BucketNotFoundError < Error
         end
 
-        # Falha de rede ao comunicar com o Cloudflare R2.
+        # Network failure while communicating with Cloudflare R2.
         class NetworkError < Error
         end
 
-        # Falha não classificada na camada de armazenamento.
+        # Unclassified failure in the storage layer.
         class StorageError < Error
         end
     end

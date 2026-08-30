@@ -1,40 +1,46 @@
-# Armazenamento
+# Storage
 
-O armazenamento abstrai a comunicação com o Cloudflare R2, utilizando a gem `aws-sdk-s3`.
+The storage abstracts the communication with Cloudflare R2, using the
+`aws-sdk-s3` gem.
 
-## Dependências
+## Dependencies
 
-A gem `aws-sdk-s3` requer um parser XML. O projeto utiliza `rexml` para atender esse requisito em tempo de execução.
+The `aws-sdk-s3` gem requires an XML parser. The project uses `rexml` to meet
+this requirement at runtime.
 
-## Responsabilidade
+## Responsibility
 
-A camada é responsável pela comunicação com o Cloudflare R2, recebendo os dados preparados pelas camadas superiores e executando as operações de armazenamento.
+The layer is responsible for communicating with Cloudflare R2, receiving the
+data prepared by the upper layers and executing the storage operations.
 
-## Região
+## Region
 
-A região é fornecida pela `Configuration` por meio de `R2_REGION`, utilizando `auto` como padrão.
+The region is provided by the `Configuration` through `R2_REGION`, using `auto`
+as the default.
 
-## Limites
+## Boundaries
 
-A camada não deve:
+The layer must not:
 
-* Ler ou localizar arquivos.
-* Processar ou transformar conteúdo.
-* Determinar a origem do conteúdo.
+* Read or locate files.
+* Process or transform content.
+* Determine the origin of the content.
 
-Essas responsabilidades pertencem às camadas que utilizam o armazenamento.
+These responsibilities belong to the layers that use the storage.
 
-## Configuração
+## Configuration
 
-O bucket é definido pela configuração do `Storage` e não é informado individualmente em cada operação.
+The bucket is defined by the `Storage` configuration and is not informed
+individually in each operation.
 
-Detalhes das funcionalidades e seu comportamento para o usuário são documentados em [FEATURES.md](../FEATURES.md).
+Details of the features and their behavior for the user are documented in
+[FEATURES.md](../FEATURES.md).
 
-## Erros
+## Errors
 
-As falhas do cliente são convertidas para a hierarquia de `R2::Errors`:
+The client failures are converted to the `R2::Errors` hierarchy:
 
-* `Errors::ConfigurationError` — credenciais de acesso ausentes ou inválidas.
-* `Errors::BucketNotFoundError` — bucket configurado inexistente.
-* `Errors::NetworkError` — falha de rede na comunicação.
-* `Errors::StorageError` — demais falhas da camada de armazenamento.
+* `Errors::ConfigurationError` — missing or invalid access credentials.
+* `Errors::BucketNotFoundError` — the configured bucket does not exist.
+* `Errors::NetworkError` — network failure in the communication.
+* `Errors::StorageError` — other failures of the storage layer.

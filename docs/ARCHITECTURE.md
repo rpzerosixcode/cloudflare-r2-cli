@@ -1,26 +1,24 @@
-# Arquitetura
+# Architecture
 
-## Estratégia de Testes
+## Test Strategy
 
-* [Testing](architecture/testing.md) — Estratégia e organização dos testes.
+* [Testing](architecture/testing.md) — Test strategy and organization.
 
-## Documentação
+## Documentation
 
-### Arquitetura
+### Architecture
 
-* [CLI](architecture/cli.md) — Estrutura e funcionamento da interface de linha de comando.
-* [Configuration](architecture/configuration.md) — Organização e gerenciamento das configurações da aplicação.
-* [Errors](architecture/errors.md) — Estratégia e organização do tratamento de erros.
-* [Storage](architecture/storage.md) — Organização da camada responsável pelo armazenamento e persistência.
-* [Testing](architecture/testing.md) — Estratégia e organização dos testes.
+* [CLI](architecture/cli.md) — Structure and operation of the command line interface.
+* [Configuration](architecture/configuration.md) — Organization and management of the application settings.
+* [Errors](architecture/errors.md) — Strategy and organization of error handling.
+* [Storage](architecture/storage.md) — Organization of the storage and persistence layer.
+* [Testing](architecture/testing.md) — Test strategy and organization.
 
-## Estrutura do projeto
-
-> A estrutura não precisa ser atualizada continuamente, mas deve ser revisada e
-> atualizada antes do release `1.0.0`.
+## Project Structure
 
 ```text
 C:.
+|   CHANGELOG.md
 |   LICENCE
 |   README.md
 |   Rakefile
@@ -36,6 +34,7 @@ C:.
 +---.github
 |   \---workflows
 |           ci.yml
+|           release.yml
 |
 +---bin
 |       r2

@@ -1,5 +1,5 @@
-# Configuração de estilo do projeto com o RuboCop.
-# Documentação: https://docs.rubocop.org/rubocop/configuration
+# Project style configuration with RuboCop.
+# Documentation: https://docs.rubocop.org/rubocop/configuration
 
 plugins:
   - rubocop-rake
@@ -12,8 +12,8 @@ AllCops:
     - "vendor/**/*"
     - "tmp/**/*"
 
-# Convenções do projeto -------------------------------------------------
-# O código-fonte utiliza indentação de 4 espaços.
+# Project conventions -------------------------------------------------
+# The source code uses 4-space indentation.
 Layout/IndentationWidth:
   Enabled: true
   Width: 4
@@ -30,42 +30,42 @@ Layout/FirstHashElementIndentation:
 Layout/FirstArrayElementIndentation:
   EnforcedStyle: consistent
 
-# Strings com aspas duplas, em linha com a convenção frozen_string_literal.
+# Double-quoted strings, in line with the frozen_string_literal convention.
 Style/StringLiterals:
   EnforcedStyle: double_quotes
 
 Style/StringLiteralsInInterpolation:
   EnforcedStyle: double_quotes
 
-# Permite o alinhamento de atribuições (ex.: r2.gemspec).
+# Allows alignment of assignments (e.g.: r2.gemspec).
 Layout/ExtraSpacing:
   AllowForAlignment: true
 
-# Fim de linha em LF para garantir a portabilidade da gem.
+# LF line endings to guarantee gem portability.
 Layout/EndOfLine:
   EnforcedStyle: lf
 
-# As dependências de desenvolvimento são centralizadas no gemspec.
+# Development dependencies are centralized in the gemspec.
 Gemspec/DevelopmentDependencies:
   Enabled: false
 
-# Classes "esqueleto" ainda não implementadas não geram avisos.
+# "Skeleton" classes not yet implemented do not generate warnings.
 Lint/EmptyClass:
   Enabled: false
 Style/EmptyClassDefinition:
   Enabled: false
 
-# Os testes são estruturados em blocos de responsabilidade (RSpec).
+# Tests are structured in responsibility blocks (RSpec).
 Metrics/BlockLength:
   Exclude:
     - "spec/**/*"
+    - "**/*.gemspec"
 
-# Módulos de suporte aos testes concentram utilitários de cenário.
+# Test support modules concentrate scenario utilities.
 Metrics/ModuleLength:
   Exclude:
     - "spec/**/*"
 
-# Métodos com múltiplas cláusulas de conversão de erros podem ser
-# ligeiramente mais longos.
+# Methods with multiple error conversion clauses may be slightly longer.
 Metrics/MethodLength:
   Max: 15

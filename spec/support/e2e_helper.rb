@@ -7,21 +7,21 @@ require "rbconfig"
 require "r2"
 require "securerandom"
 
-# Suporte aos testes E2E.
+# E2E tests support.
 #
-# Carrega as variáveis de ambiente do arquivo `.env` e oferece utilitários
-# para executar o CLI em um processo separado e preparar os dados dos testes.
+# Loads the environment variables from the `.env` file and provides utilities
+# to run the CLI in a separate process and prepare the test data.
 #
-# Quando as credenciais necessárias não estão disponíveis, os cenários são
-# marcados como pendentes, permitindo executar a suíte em ambientes sem
-# acesso ao Cloudflare R2 (como o CI).
+# When the required credentials are not available, the scenarios are marked
+# as pending, allowing the suite to run in environments without access to
+# Cloudflare R2 (such as CI).
 module E2EHelper
     ROOT = File.expand_path("../..", __dir__).freeze
     BIN = File.join(ROOT, "bin", "r2").freeze
     ENV_FILE = File.join(ROOT, ".env").freeze
     TEST_BUCKET = ENV.fetch("R2_TEST_BUCKET", "test-bucket").freeze
 
-    # Configuração mínima usada na limpeza dos objetos externos.
+    # Minimal configuration used to clean up external objects.
     CLEANUP_CONFIG = Struct.new(
         :bucket,
         :region,
@@ -36,7 +36,7 @@ module E2EHelper
         R2_ENDPOINT
     ].freeze
 
-    # Imagem JPEG mínima (1x1) usada como conteúdo dos arquivos de teste.
+    # Minimal JPEG image (1x1) used as the content of the test files.
     JPEG_1X1 = Base64.decode64(
         "/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8U" \
         "HRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/wAALCAABAAEBAREA" \
@@ -44,9 +44,10 @@ module E2EHelper
         "AD8AVN//2Q=="
     ).freeze
 
-    # Carrega as variáveis de ambiente do arquivo `.env`, se existir.
+    # Loads the environment variables from the `.env` file, if it exists.
     #
-    # Variáveis já definidas no ambiente têm prioridade e não são sobrescritas.
+    # Variables already defined in the environment take precedence and are
+    # not overwritten.
     def load_test_env!
         return if @loaded
 
@@ -56,13 +57,13 @@ module E2EHelper
         File.foreach(ENV_FILE) { |line| apply_env_line(line) }
     end
 
-    # Executa o CLI em um processo separado, como um usuário faria no terminal.
+    # Runs the CLI in a separate process, as a user would in the terminal.
     #
-    # O bucket usado pelos testes é sempre o bucket de teste.
+    # The bucket used by the tests is always the test bucket.
     #
-    # O carregamento via `-rbundler/setup` garante que as dependências do
-    # projeto estejam ativas, já que o binário empacotado não depende do
-    # Bundler (portabilidade da gem instalada).
+    # Loading via `-rbundler/setup` ensures that the project dependencies are
+    # active, since the packaged binary does not depend on Bundler
+    # (portability of the installed gem).
     def run_cli(*, env: {})
         load_test_env!
         ensure_required_env!
@@ -77,8 +78,8 @@ module E2EHelper
         )
     end
 
-    # Cria um arquivo temporário único para ser enviado nos testes.
-    def create_temp_file(prefix: "teste")
+    # Creates a unique temporary file to be uploaded in the tests.
+    def create_temp_file(prefix: "test")
         dir = File.join(ROOT, "tmp", "e2e")
 
         FileUtils.mkdir_p(dir)
@@ -91,38 +92,39 @@ module E2EHelper
         path
     end
 
-    # Remove os arquivos temporários criados durante os testes.
+    # Removes the temporary files created during the tests.
     def cleanup_temp_files!
         FileUtils.rm_rf(File.join(ROOT, "tmp", "e2e"))
     end
 
-    # Remove do bucket de testes os objetos enviados durante os testes.
+    # Removes from the test bucket the objects uploaded during the tests.
     #
-    # Considera que cada arquivo criado por `create_temp_file` é enviado pelo
-    # comando `upload`, usando o nome do arquivo como chave do objeto no bucket.
+    # Considers that each file created by `create_temp_file` is uploaded by
+    # the `upload` command, using the file name as the object key in the bucket.
     #
-    # A limpeza é tolerante a falhas: erros de rede ou de credenciais apenas
-    # registram um aviso, evitando que a limpeza faça um cenário já validado
-    # ser marcado como falha.
+    # The cleanup is failure tolerant: network or credential errors only log
+    # a warning, avoiding the cleanup marking an already validated scenario
+    # as failed.
     def cleanup_external_data!
         keys = tracked_files.map { |path| File.basename(path) }.uniq
         return if keys.empty? || missing_required_env?
 
         keys.each { |key| external_storage.delete(key: key) }
     rescue StandardError => e
-        warn "Aviso: não foi possível limpar os objetos externos do bucket de testes: #{e.message}"
+        warn "Warning: could not clean up the external objects in the test bucket: #{e.message}"
     ensure
         tracked_files.clear
     end
 
-    # Caminhos dos arquivos criados durante os testes ainda não limpos.
+    # Paths of the files created during the tests not yet cleaned up.
     def tracked_files
         @tracked_files ||= []
     end
 
-    # Armazenamento usado na limpeza dos objetos externos.
+    # Storage used to clean up the external objects.
     #
-    # Sempre direcionado ao bucket de testes, isolado do ambiente de produção.
+    # Always directed to the test bucket, isolated from the production
+    # environment.
     def external_storage
         config = CLEANUP_CONFIG.new(
             TEST_BUCKET,
@@ -135,7 +137,7 @@ module E2EHelper
         R2::Storage.new(config)
     end
 
-    # Aplica uma linha do arquivo `.env` ao ambiente, quando válida.
+    # Applies a line of the `.env` file to the environment, when valid.
     def apply_env_line(line)
         key, value = line.strip.split("=", 2)
 
@@ -144,20 +146,20 @@ module E2EHelper
         ENV[key] = value unless ENV.key?(key)
     end
 
-    # Garante que as variáveis de ambiente necessárias estejam disponíveis,
-    # marcando o cenário como pendente quando não estiverem.
+    # Ensures that the required environment variables are available, marking
+    # the scenario as pending when they are not.
     def ensure_required_env!
         missing = REQUIRED_VARS.reject { |variable| ENV.key?(variable) }
 
         return if missing.empty?
 
-        skip "Variáveis de ambiente necessárias ausentes: #{missing.join(", ")}. " \
-             "Defina-as no arquivo .env ou no ambiente."
+        skip "Required environment variables are missing: #{missing.join(", ")}. " \
+             "Define them in the .env file or in the environment."
     end
 
     private
 
-    # Monta o ambiente de execução do CLI, sempre direcionado ao bucket de teste.
+    # Builds the CLI execution environment, always directed to the test bucket.
     def process_env(env)
         {
             "R2_ACCESS_KEY_ID" => ENV.fetch("R2_ACCESS_KEY_ID"),
@@ -168,7 +170,7 @@ module E2EHelper
         }.merge(env)
     end
 
-    # Indica se alguma variável de ambiente necessária está ausente.
+    # Indicates whether any required environment variable is missing.
     def missing_required_env?
         REQUIRED_VARS.any? { |variable| !ENV.key?(variable) }
     end

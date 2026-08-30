@@ -3,10 +3,9 @@
 require_relative "errors"
 
 module R2
-    # Configuração centralizada da aplicação.
+    # Centralized application configuration.
     #
-    # As configurações são obtidas diretamente de variáveis de ambiente,
-    # mantendo o MVP simples.
+    # Settings are read directly from environment variables.
     class Configuration
         attr_reader :access_key_id,
                     :secret_access_key,
@@ -14,13 +13,13 @@ module R2
                     :bucket,
                     :region
 
-        # Inicializa a configuração a partir das variáveis de ambiente.
+        # Initializes the configuration from environment variables.
         #
-        # `R2_REGION` é opcional e, quando ausente, assume o valor padrão
-        # `auto`, recomendado para endpoints do Cloudflare R2.
+        # `R2_REGION` is optional and defaults to `auto` when absent, which
+        # is recommended for Cloudflare R2 endpoints.
         #
-        # @raise [Errors::ConfigurationError] quando alguma variável
-        #   obrigatória não está definida
+        # @raise [Errors::ConfigurationError] when any required variable
+        #   is not defined
         def initialize
             @access_key_id = fetch_required("R2_ACCESS_KEY_ID")
             @secret_access_key = fetch_required("R2_SECRET_ACCESS_KEY")
@@ -31,15 +30,15 @@ module R2
 
         private
 
-        # Obtém o valor de uma variável de ambiente obrigatória.
+        # Gets the value of a required environment variable.
         #
-        # @param name [String] nome da variável de ambiente
-        # @return [String] valor da variável
-        # @raise [Errors::ConfigurationError] se a variável não estiver definida
+        # @param name [String] name of the environment variable
+        # @return [String] variable value
+        # @raise [Errors::ConfigurationError] if the variable is not defined
         def fetch_required(name)
             ENV.fetch(name) do
                 raise Errors::ConfigurationError,
-                      "Variável de ambiente obrigatória não definida: #{name}"
+                      "Required environment variable not defined: #{name}"
             end
         end
     end

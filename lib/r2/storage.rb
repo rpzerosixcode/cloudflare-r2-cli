@@ -4,14 +4,14 @@ require "aws-sdk-s3"
 require_relative "errors"
 
 module R2
-    # Camada de armazenamento responsável pela comunicação com o Cloudflare R2.
+    # Storage layer responsible for communicating with Cloudflare R2.
     #
-    # Utiliza a gem `aws-sdk-s3` com o endpoint compatível com S3 fornecido
-    # pela configuração da aplicação.
+    # Uses the `aws-sdk-s3` gem with the S3-compatible endpoint provided by
+    # the application configuration.
     class Storage
-        # Inicializa o armazenamento com as credenciais e o bucket configurados.
+        # Initializes the storage with the configured credentials and bucket.
         #
-        # @param config [Configuration] configuração da aplicação
+        # @param config [Configuration] application configuration
         def initialize(config)
             @bucket = config.bucket
             @s3 = Aws::S3::Client.new(
@@ -23,14 +23,14 @@ module R2
             )
         end
 
-        # Envia um objeto para o bucket configurado.
+        # Uploads an object to the configured bucket.
         #
-        # Recebe o conteúdo já preparado pela camada que utiliza o armazenamento
-        # e o entrega ao Cloudflare R2.
+        # Receives content already prepared by the layer that uses the storage
+        # and delivers it to Cloudflare R2.
         #
-        # @param key [String] chave do objeto no bucket
-        # @param body [IO, String] conteúdo do objeto a ser enviado
-        # @raise [Errors::Error] se a operação falhar
+        # @param key [String] object key in the bucket
+        # @param body [IO, String] content of the object to upload
+        # @raise [Errors::Error] if the operation fails
         def upload(key:, body:)
             @s3.put_object(
                 bucket: @bucket,
@@ -41,13 +41,13 @@ module R2
             raise_storage_error(e)
         end
 
-        # Exclui um objeto do bucket configurado.
+        # Deletes an object from the configured bucket.
         #
-        # A operação é considerada bem-sucedida quando o Cloudflare R2
-        # conclui a solicitação sem lançar um erro.
+        # The operation is considered successful when Cloudflare R2 completes
+        # the request without raising an error.
         #
-        # @param key [String] chave do objeto no bucket
-        # @raise [Errors::Error] se a operação falhar
+        # @param key [String] object key in the bucket
+        # @raise [Errors::Error] if the operation fails
         def delete(key:)
             @s3.delete_object(
                 bucket: @bucket,
@@ -57,10 +57,10 @@ module R2
             raise_storage_error(e)
         end
 
-        # Lista os objetos armazenados no bucket configurado.
+        # Lists the objects stored in the configured bucket.
         #
-        # @return [Array<String>] chaves dos objetos armazenados
-        # @raise [Errors::Error] se a operação falhar
+        # @return [Array<String>] keys of the stored objects
+        # @raise [Errors::Error] if the operation fails
         def list
             response = @s3.list_objects_v2(bucket: @bucket)
             response.contents.map(&:key)
@@ -70,20 +70,20 @@ module R2
 
         private
 
-        # Converte erros da camada de armazenamento em erros de domínio do
-        # projeto, evitando expor detalhes internos das implementações.
+        # Converts storage layer errors into project domain errors, avoiding
+        # exposing internal details of the implementations.
         #
-        # A mensagem original é preservada quando útil.
+        # The original message is preserved when useful.
         #
-        # @param error [StandardError] erro original
-        # @raise [Errors::Error] subclasse correspondente à causa do erro
+        # @param error [StandardError] original error
+        # @raise [Errors::Error] subclass matching the cause of the error
         def raise_storage_error(error)
             case error
             when Aws::Errors::MissingCredentialsError
                 raise Errors::ConfigurationError,
-                      "Variáveis de ambiente de credenciais ausentes ou inválidas."
+                      "Missing or invalid credential environment variables."
             when Aws::S3::Errors::NoSuchBucket
-                raise Errors::BucketNotFoundError, "Bucket não encontrado: #{@bucket}"
+                raise Errors::BucketNotFoundError, "Bucket not found: #{@bucket}"
             when Seahorse::Client::NetworkingError
                 raise Errors::NetworkError, error.message
             else

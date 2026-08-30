@@ -6,16 +6,16 @@ Gem::Specification.new do |spec|
     spec.name        = "cloudflare-r2-cli"
     spec.version     = R2::VERSION
     spec.authors     = ["rpzerosixcode"]
-    spec.summary     = "CLI em Ruby para gerenciar objetos no Cloudflare R2."
-    spec.description = "Ferramenta de linha de comando em Ruby para gerenciar " \
-                       "objetos no Cloudflare R2 diretamente pelo terminal."
+    spec.summary     = "Ruby CLI to manage objects on Cloudflare R2."
+    spec.description = "Command line tool in Ruby to manage objects on Cloudflare " \
+                       "R2 directly from the terminal."
     spec.homepage    = "https://github.com/rpzerosixcode/cloudflare-r2-cli"
     spec.license     = "MIT"
 
     spec.required_ruby_version = Gem::Requirement.new(">= 3.3.0")
 
     spec.files = Dir.chdir(__dir__) do
-        Dir["bin/**/*", "lib/**/*", "docs/**/*", "LICENCE", "README.md", "Rakefile"]
+        Dir["bin/**/*", "lib/**/*", "docs/**/*", "CHANGELOG.md", "LICENCE", "README.md", "Rakefile"]
     end
 
     spec.bindir        = "bin"
@@ -31,5 +31,7 @@ Gem::Specification.new do |spec|
     spec.add_development_dependency "rubocop", "~> 1.90"
     spec.add_development_dependency "rubocop-rake", "~> 0.7"
 
+    spec.metadata["homepage_uri"] = spec.homepage
+    spec.metadata["changelog_uri"] = "#{spec.homepage}/blob/main/CHANGELOG.md"
     spec.metadata["rubygems_mfa_required"] = "true"
 end

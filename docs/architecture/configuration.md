@@ -1,22 +1,24 @@
-# Configuração
+# Configuration
 
-A `Configuration` centralizará as configurações da aplicação.
+The `Configuration` centralizes the application settings.
 
-## Origem
+## Source
 
-As configurações serão obtidas diretamente de **variáveis de ambiente**, mantendo o MVP simples. Os demais componentes não devem acessar `ENV` diretamente.
+The settings are obtained directly from **environment variables**. The other
+components must not access `ENV` directly.
 
-## Variáveis
+## Variables
 
-As variáveis obrigatórias são `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`,
-`R2_ENDPOINT` e `R2_BUCKET`.
+The required variables are `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`,
+`R2_ENDPOINT` and `R2_BUCKET`.
 
-A variável `R2_REGION` é opcional e, quando ausente, usa o valor padrão `auto`,
-recomendado para o Cloudflare R2.
+The `R2_REGION` variable is optional and, when absent, uses the default value
+`auto`, recommended for Cloudflare R2.
 
-Quando uma variável obrigatória está ausente, a `Configuration` levanta
-`R2::Errors::ConfigurationError` com uma mensagem indicando a variável.
+When a required variable is absent, the `Configuration` raises
+`R2::Errors::ConfigurationError` with a message indicating the variable.
 
-## Evolução
+## Evolution
 
-A origem das configurações poderá ser diversificada futuramente caso surja uma necessidade real.
+The source of the settings may be diversified in the future if a real need
+arises.

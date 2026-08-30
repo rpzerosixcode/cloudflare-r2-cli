@@ -11,41 +11,41 @@ RSpec.describe R2::Configuration do
             "R2_ACCESS_KEY_ID" => "access-key-id",
             "R2_SECRET_ACCESS_KEY" => "secret-access-key",
             "R2_ENDPOINT" => "https://s3.example.com",
-            "R2_BUCKET" => "bucket-teste"
+            "R2_BUCKET" => "test-bucket"
         }
     end
 
     describe "#initialize" do
-        context "quando todas as variáveis obrigatórias estão definidas" do
-            it "carrega as configurações a partir do ambiente" do
+        context "when all required variables are defined" do
+            it "loads the configuration from the environment" do
                 with_r2_env(valid_env) do
                     config = described_class.new
 
                     expect(config.access_key_id).to eq("access-key-id")
                     expect(config.secret_access_key).to eq("secret-access-key")
                     expect(config.endpoint).to eq("https://s3.example.com")
-                    expect(config.bucket).to eq("bucket-teste")
+                    expect(config.bucket).to eq("test-bucket")
                 end
             end
         end
 
-        context "região" do
-            it "usa o padrão 'auto' quando R2_REGION não está definida" do
+        context "region" do
+            it "uses the default 'auto' when R2_REGION is not defined" do
                 with_r2_env(valid_env) do
                     expect(described_class.new.region).to eq("auto")
                 end
             end
 
-            it "usa o valor definido em R2_REGION" do
+            it "uses the value defined in R2_REGION" do
                 with_r2_env(valid_env.merge("R2_REGION" => "us-east-1")) do
                     expect(described_class.new.region).to eq("us-east-1")
                 end
             end
         end
 
-        context "quando uma variável obrigatória está ausente" do
+        context "when a required variable is missing" do
             %w[R2_ACCESS_KEY_ID R2_SECRET_ACCESS_KEY R2_ENDPOINT R2_BUCKET].each do |variable|
-                it "levanta Errors::ConfigurationError quando #{variable} não está definida" do
+                it "raises Errors::ConfigurationError when #{variable} is not defined" do
                     with_r2_env(valid_env.reject { |key, _value| key == variable }) do
                         expect { described_class.new }
                             .to raise_error(

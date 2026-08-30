@@ -1,96 +1,96 @@
 # Cloudflare R2 CLI
 
-CLI em Ruby para gerenciar objetos no Cloudflare R2 pelo terminal.
+Ruby CLI to manage objects on Cloudflare R2 from the terminal.
 
-## Requisitos
+## Requirements
 
-* Ruby **3.0** ou superior.
+* Ruby **3.3** or higher.
 
-## Instalação
+## Installation
 
-### A partir de uma gem publicada
+### From a published gem
 
 ```console
 $ gem install cloudflare-r2-cli
 ```
 
-### A partir do código-fonte
+### From the source code
 
 ```console
 $ git clone https://github.com/rpzerosixcode/cloudflare-r2-cli.git
 $ cd cloudflare-r2-cli
 $ bundle install
 $ bundle exec rake build
-$ gem install pkg/cloudflare-r2-cli-0.0.0.gem
+$ gem install pkg/cloudflare-r2-cli-1.0.0.gem
 ```
 
-## Uso
+## Usage
 
-### Configuração
+### Configuration
 
-Antes de usar o CLI, defina as variáveis de ambiente necessárias:
+Before using the CLI, define the required environment variables:
 
-| Variável               | Descrição                                              |
-| ---------------------- | ------------------------------------------------------ |
-| `R2_ACCESS_KEY_ID`     | ID da chave de acesso S3 do Cloudflare R2.             |
-| `R2_SECRET_ACCESS_KEY` | Chave de acesso secreta S3 do Cloudflare R2.           |
-| `R2_ENDPOINT`          | Endpoint compatível com S3 do Cloudflare R2.           |
-| `R2_REGION`            | Região do endpoint compatível com S3. *(opcional, padrão `auto`)* |
-| `R2_BUCKET`            | Bucket padrão utilizado pelo CLI.                      |
+| Variable               | Description                                        |
+| ---------------------- | -------------------------------------------------- |
+| `R2_ACCESS_KEY_ID`     | Cloudflare R2 S3 access key ID.                    |
+| `R2_SECRET_ACCESS_KEY` | Cloudflare R2 S3 secret access key.                |
+| `R2_ENDPOINT`          | Cloudflare R2 S3-compatible endpoint.              |
+| `R2_REGION`            | Region of the S3-compatible endpoint. *(optional, default `auto`)* |
+| `R2_BUCKET`            | Default bucket used by the CLI.                    |
 
-Um modelo preenchível está disponível em [`.env.example`](.env.example).
+A fillable template is available in [`.env.example`](.env.example).
 
-As credenciais são lidas apenas de variáveis de ambiente e nunca devem ser
-inseridas em código ou em arquivos versionados. Consulte
-[`docs/SECURITY.md`](docs/SECURITY.md) para mais detalhes.
+Credentials are read only from environment variables and must never be
+inserted into code or versioned files. See
+[`docs/SECURITY.md`](docs/SECURITY.md) for more details.
 
 ### Upload
 
-Envia uma imagem para o bucket configurado:
+Uploads an image to the configured bucket:
 
 ```console
-$ r2 upload imagem.jpg
-$ r2 upload ./imagens/foto.png
+$ r2 upload image.jpg
+$ r2 upload ./images/photo.png
 ```
 
-A chave do objeto no bucket será o nome do arquivo informado. Em caso de
-sucesso, uma mensagem de confirmação é exibida.
+The object key in the bucket will be the name of the given file. On success,
+a confirmation message is displayed.
 
 ### Delete
 
-Exclui um arquivo armazenado no bucket configurado:
+Deletes a file stored in the configured bucket:
 
 ```console
-$ r2 delete imagem.jpg
+$ r2 delete image.jpg
 ```
 
-A operação é confirmada pelo resultado da exclusão retornado pelo serviço.
+The operation is confirmed by the result of the deletion returned by the service.
 
 ### List
 
-Lista os arquivos armazenados no bucket configurado:
+Lists the files stored in the configured bucket:
 
 ```console
 $ r2 list
 ```
 
-Em qualquer erro, a CLI exibe a mensagem correspondente na saída de erro e
-encerra com código de status `1`.
+On any error, the CLI displays the corresponding message on the error output
+and exits with status code `1`.
 
-## Desenvolvimento
+## Development
 
-As diretrizes de desenvolvimento, branches e commits estão descritas em
+The development guidelines, branches and commits are described in
 [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md).
 
-### Testes
+### Tests
 
-Executar toda a suíte (unidade, integração e E2E):
+Run the full suite (unit, integration and E2E):
 
 ```console
 $ bundle exec rake
 ```
 
-Executar apenas um nível:
+Run only one level:
 
 ```console
 $ bundle exec rake unit
@@ -98,19 +98,20 @@ $ bundle exec rake integration
 $ bundle exec rake e2e
 ```
 
-Os testes E2E exigem credenciais reais do Cloudflare R2, fornecidas pelo
-arquivo `.env` ou pelo ambiente. Sem elas, os cenários são marcados como
-pendentes (`pending`) e não falham.
+The E2E tests require real Cloudflare R2 credentials, provided by the `.env`
+file or by the environment. Without them, the scenarios are marked as
+pending and do not fail.
 
-## Documentação
+## Documentation
 
-* [Arquitetura](docs/ARCHITECTURE.md) — Visão geral da arquitetura do projeto.
-* [Decisões](docs/DECISIONS.md) — Decisões de arquitetura e de projeto.
-* [Funcionalidades](docs/FEATURES.md) — Funcionalidades previstas e implementadas.
-* [Roadmap](docs/ROADMAP.md) — Evolução planejada do projeto.
-* [Segurança](docs/SECURITY.md) — Diretrizes gerais de segurança do projeto.
-* [Desenvolvimento](docs/DEVELOPMENT.md) — Diretrizes de desenvolvimento do projeto.
+* [Architecture](docs/ARCHITECTURE.md) — Overview of the project architecture.
+* [Changelog](CHANGELOG.md) — Version history of the project.
+* [Decisions](docs/DECISIONS.md) — Architecture and project decisions.
+* [Features](docs/FEATURES.md) — Planned and implemented features.
+* [Roadmap](docs/ROADMAP.md) — Planned evolution of the project.
+* [Security](docs/SECURITY.md) — General security guidelines of the project.
+* [Development](docs/DEVELOPMENT.md) — Development guidelines of the project.
 
-## Licença
+## License
 
-[Licença MIT](./LICENCE) — Termos de uso e distribuição do projeto.
+[MIT License](./LICENCE) — Terms of use and distribution of the project.
