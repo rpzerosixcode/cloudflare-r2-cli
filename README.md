@@ -24,25 +24,26 @@ $ bundle exec rake build
 $ gem install pkg/cloudflare-r2-cli-1.0.0.gem
 ```
 
-## Usage
-
-### Configuration
+## Configuration
 
 Before using the CLI, define the required environment variables:
 
-| Variable               | Description                                        |
-| ---------------------- | -------------------------------------------------- |
-| `R2_ACCESS_KEY_ID`     | Cloudflare R2 S3 access key ID.                    |
-| `R2_SECRET_ACCESS_KEY` | Cloudflare R2 S3 secret access key.                |
-| `R2_ENDPOINT`          | Cloudflare R2 S3-compatible endpoint.              |
+| Variable               | Description                                                         |
+| ----------------------- | -------------------------------------------------------------------- |
+| `R2_ACCESS_KEY_ID`     | Cloudflare R2 S3 access key ID.                                     |
+| `R2_SECRET_ACCESS_KEY` | Cloudflare R2 S3 secret access key.                                 |
+| `R2_ENDPOINT`          | Cloudflare R2 S3-compatible endpoint.                               |
 | `R2_REGION`            | Region of the S3-compatible endpoint. *(optional, default `auto`)* |
-| `R2_BUCKET`            | Default bucket used by the CLI.                    |
+| `R2_BUCKET`            | Default bucket used by the CLI.                                     |
 
-A fillable template is available in [`.env.example`](.env.example).
+A fillable template is available in `.env.example`.
 
 Credentials are read only from environment variables and must never be
-inserted into code or versioned files. See
-[`docs/SECURITY.md`](docs/SECURITY.md) for more details.
+inserted into code or versioned files. If an access key is accidentally
+exposed, revoke it immediately through the Cloudflare dashboard and generate
+a new one.
+
+## Usage
 
 ### Upload
 
@@ -64,8 +65,6 @@ Deletes a file stored in the configured bucket:
 $ r2 delete image.jpg
 ```
 
-The operation is confirmed by the result of the deletion returned by the service.
-
 ### List
 
 Lists the files stored in the configured bucket:
@@ -77,12 +76,7 @@ $ r2 list
 On any error, the CLI displays the corresponding message on the error output
 and exits with status code `1`.
 
-## Development
-
-The development guidelines, branches and commits are described in
-[`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md).
-
-### Tests
+## Testing
 
 Run the full suite (unit, integration and E2E):
 
@@ -102,15 +96,9 @@ The E2E tests require real Cloudflare R2 credentials, provided by the `.env`
 file or by the environment. Without them, the scenarios are marked as
 pending and do not fail.
 
-## Documentation
+## Changelog
 
-* [Architecture](docs/ARCHITECTURE.md) — Overview of the project architecture.
-* [Changelog](CHANGELOG.md) — Version history of the project.
-* [Decisions](docs/DECISIONS.md) — Architecture and project decisions.
-* [Features](docs/FEATURES.md) — Planned and implemented features.
-* [Roadmap](docs/ROADMAP.md) — Planned evolution of the project.
-* [Security](docs/SECURITY.md) — General security guidelines of the project.
-* [Development](docs/DEVELOPMENT.md) — Development guidelines of the project.
+See [`CHANGELOG.md`](CHANGELOG.md) for the version history of the project.
 
 ## License
 
