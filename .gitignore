@@ -1,0 +1,31 @@
+# Dependencies
+/vendor/bundle/
+/vendor/bundle/**/.keep
+
+# Build and packaging artifacts
+*.gem
+build/
+/pkg/
+
+# Development and debug files
+.dev/
+
+# Temporary files
+/tmp/
+
+# Tools
+/.rubocop_cache/
+.rubocop-https*
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Operating system
+.DS_Store
+Thumbs.db
+
+# Editors and IDEs
+.vscode/
+.idea/
