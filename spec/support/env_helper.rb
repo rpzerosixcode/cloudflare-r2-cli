@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# Apoio ao controle das variáveis de ambiente R2 nos testes.
+# Support for controlling the R2 environment variables in tests.
 module EnvHelper
     R2_ENV_VARS = %w[
         R2_ACCESS_KEY_ID
@@ -10,11 +10,11 @@ module EnvHelper
         R2_BUCKET
     ].freeze
 
-    # Aplica os valores informados às variáveis de ambiente R2, executa o
-    # bloco e restaura o estado anterior ao final.
+    # Applies the given values to the R2 environment variables, runs the
+    # block and restores the previous state at the end.
     #
-    # Variáveis de ambiente não informadas são removidas durante o bloco,
-    # garantindo que nenhuma configuração externa interfira nos testes.
+    # Environment variables not provided are removed during the block,
+    # ensuring that no external setting interferes with the tests.
     def with_r2_env(values = {})
         saved = snapshot_env
 
@@ -28,22 +28,22 @@ module EnvHelper
 
     private
 
-    # Guarda os valores atuais das variáveis de ambiente R2.
+    # Saves the current values of the R2 environment variables.
     def snapshot_env
         R2_ENV_VARS.to_h { |var| [var, ENV.fetch(var, nil)] }
     end
 
-    # Remove as variáveis de ambiente R2 do ambiente.
+    # Removes the R2 environment variables from the environment.
     def clear_env
         R2_ENV_VARS.each { |var| ENV.delete(var) }
     end
 
-    # Aplica os valores informados às variáveis de ambiente R2.
+    # Applies the given values to the R2 environment variables.
     def apply_env(values)
         values.each { |var, value| ENV[var] = value }
     end
 
-    # Restaura o estado anterior das variáveis de ambiente R2.
+    # Restores the previous state of the R2 environment variables.
     def restore_env(saved)
         saved.each do |var, value|
             if value.nil?

@@ -2,14 +2,14 @@
 
 require "stringio"
 
-# Captura das saídas padrão e de erro durante a execução dos testes.
+# Capture of the standard and error outputs during test execution.
 #
-# A captura é restaurada mesmo quando o bloco levanta uma exceção,
-# como o encerramento da CLI via `SystemExit`.
+# The capture is restored even when the block raises an exception, such as
+# the CLI termination via `SystemExit`.
 module OutputCapture
-    # Captura a saída padrão durante a execução do bloco.
+    # Captures the standard output during the execution of the block.
     #
-    # O conteúdo capturado pode ser consultado por `last_stdout`.
+    # The captured content can be queried with `last_stdout`.
     def capture_stdout
         original = $stdout
         @captured_stdout = StringIO.new
@@ -20,9 +20,9 @@ module OutputCapture
         $stdout = original
     end
 
-    # Captura a saída de erro durante a execução do bloco.
+    # Captures the error output during the execution of the block.
     #
-    # O conteúdo capturado pode ser consultado por `last_stderr`.
+    # The captured content can be queried with `last_stderr`.
     def capture_stderr
         original = $stderr
         @captured_stderr = StringIO.new
@@ -33,12 +33,12 @@ module OutputCapture
         $stderr = original
     end
 
-    # Retorna o conteúdo da última captura da saída padrão.
+    # Returns the content of the last standard output capture.
     def last_stdout
         @captured_stdout.string
     end
 
-    # Retorna o conteúdo da última captura da saída de erro.
+    # Returns the content of the last error output capture.
     def last_stderr
         @captured_stderr.string
     end

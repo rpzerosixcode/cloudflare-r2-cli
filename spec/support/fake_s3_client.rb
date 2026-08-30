@@ -1,24 +1,24 @@
 # frozen_string_literal: true
 
-# Cliente S3 falso usado nos testes de integração.
+# Fake S3 client used in integration tests.
 #
-# Simula um bucket isolado em memória e registra as chamadas realizadas,
-# permitindo validar a interação entre a CLI, o armazenamento e o cliente
-# do Cloudflare R2 sem depender de uma conexão real.
+# Simulates an isolated in-memory bucket and records the calls made, allowing
+# the interaction between the CLI, the storage and the Cloudflare R2 client
+# to be validated without depending on a real connection.
 class FakeS3Client
-    # Resposta da operação de listagem de objetos.
+    # Response of the object listing operation.
     ObjectList = Struct.new(:contents)
 
-    # Resumo de um objeto armazenado no bucket.
-    # Listagem: https://docs.aws.amazon.com/AmazonS3/latest/API/API_Object.html
+    # Summary of an object stored in the bucket.
+    # Listing: https://docs.aws.amazon.com/AmazonS3/latest/API/API_Object.html
     ObjectSummary = Struct.new(:key)
 
-    # Erro levantado quando um cenário de falha é configurado.
+    # Error raised when a failure scenario is configured.
     Failure = Class.new(StandardError)
 
     attr_reader :uploads, :deletes, :last_list_bucket
 
-    # @param objects [Array<String>] chaves dos objetos já presentes no bucket
+    # @param objects [Array<String>] keys of the objects already in the bucket
     def initialize(objects: [])
         @objects = objects.dup
         @uploads = []
@@ -26,15 +26,15 @@ class FakeS3Client
         @failures = {}
     end
 
-    # Configura um cenário de falha para uma operação específica.
+    # Configures a failure scenario for a specific operation.
     #
-    # @param operation [Symbol] operação que deve falhar (:upload, :delete, :list)
-    # @param message [String] mensagem do erro simulado
-    def fail_on(operation, message: "simulacao de falha")
+    # @param operation [Symbol] operation that must fail (:upload, :delete, :list)
+    # @param message [String] message of the simulated error
+    def fail_on(operation, message: "simulated failure")
         @failures[operation] = message
     end
 
-    # Simula a criação de um objeto no bucket.
+    # Simulates the creation of an object in the bucket.
     def put_object(bucket:, key:, body:)
         raise_failure!(:upload)
 
@@ -44,7 +44,7 @@ class FakeS3Client
         nil
     end
 
-    # Simula a exclusão de um objeto do bucket.
+    # Simulates the deletion of an object from the bucket.
     def delete_object(bucket:, key:)
         raise_failure!(:delete)
 
@@ -54,7 +54,7 @@ class FakeS3Client
         nil
     end
 
-    # Simula a listagem dos objetos do bucket.
+    # Simulates the listing of the objects in the bucket.
     def list_objects_v2(bucket:)
         raise_failure!(:list)
 
@@ -64,7 +64,7 @@ class FakeS3Client
 
     private
 
-    # Levanta um erro simulado quando um cenário de falha está configurado.
+    # Raises a simulated error when a failure scenario is configured.
     def raise_failure!(operation)
         message = @failures[operation]
 

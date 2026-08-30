@@ -1,46 +1,30 @@
-# Decisões
+# Decisions
 
-> **Nota:** Decisões técnicas específicas de implementação e código não serão abordadas neste documento. Esses assuntos serão registrados e acompanhados em arquivos específicos, conforme a evolução do projeto.
+This document records the main architectural and project-level decisions.
 
-## Nome
+## Name
 
-O nome do projeto para publicação será **`cloudflare-r2-cli`**.
+The publication name of the project is **`cloudflare-r2-cli`**.
 
-Para uso comum e desenvolvimento interno, será utilizado **`r2`**.
+For command usage, **`r2`** is used.
 
-## Conteúdo
+## Content
 
-O projeto será desenvolvido inicialmente em **português**.
-
-Antes do fechamento da versão **`1.0.0`**, o conteúdo do projeto será traduzido e padronizado para **inglês**.
+The project's public content is maintained in **English**.
 
 ## Changelog
 
-Não será mantido um `CHANGELOG` antes da versão **`1.0.0`**.
+Formal changelog maintenance starts with version **`1.0.0`** in
+[CHANGELOG.md](../CHANGELOG.md).
 
-A manutenção formal do changelog será iniciada a partir da versão **`1.0.0`**.
+## Versioning
 
-## Escopo do MVP
+The project follows **Semantic Versioning**, starting with version **`1.0.0`**.
 
-O MVP terá como foco:
+## Dependency Injection
 
-* estabelecer uma **base sustentável para evolução**;
-* aplicar **boas práticas de desenvolvimento**;
-* implementar as **funcionalidades mínimas necessárias**.
+Dependencies should preferably be provided through **dependency injection**,
+avoiding unnecessary coupling to concrete implementations.
 
-**Segurança e otimização não serão objetivos prioritários do MVP**, mas poderão ser consideradas conforme a evolução e as necessidades do projeto.
-
-## Versionamento
-
-O versionamento formal **não será adotado durante o desenvolvimento do MVP**.
-
-A adoção do versionamento será iniciada a partir da versão **`1.0.0`**.
-
-## Injeção de Dependências
-
-As dependências dos componentes devem ser fornecidas preferencialmente por **injeção de dependência**, evitando acoplamento desnecessário às implementações.
-
-A aplicação não utilizará um container de injeção de dependências inicialmente. As dependências serão fornecidas diretamente pelos componentes que as utilizam.
-
-O uso de um container poderá ser **reavaliado futuramente**, caso o crescimento da aplicação torne sua adoção justificável.
-
+The project does not use a dependency injection container. Dependencies are
+provided directly by the components that require them.

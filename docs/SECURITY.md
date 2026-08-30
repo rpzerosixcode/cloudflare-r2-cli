@@ -1,16 +1,19 @@
-# Segurança
+# Security
 
-As principais medidas de segurança do projeto são:
+The project follows the following security practices:
 
-* **Credenciais por variáveis de ambiente** — as credenciais de acesso e as
-  configurações sensíveis são obtidas exclusivamente de variáveis de ambiente,
-  nunca do código-fonte ou de arquivos versionados.
-* **Ambiente de teste isolado** — os testes E2E utilizam um bucket dedicado
-  (`R2_TEST_BUCKET`), separado do bucket padrão da aplicação.
-* **Arquivos de ambiente ignorados** — o arquivo `.env` e suas variantes não
-  são rastreados pelo Git; apenas o modelo `.env.example` é versionado.
-* **CI e segredos** — no fluxo de integração contínua, as credenciais são
-  fornecidas por segredos do repositório e nunca são exibidas nos logs.
+- **Credentials through environment variables** — access credentials and
+  sensitive settings are obtained through environment variables and are not
+  stored in source code or versioned files.
 
-Se uma chave de acesso for exposta acidentalmente, revogue-a imediatamente no
-painel do Cloudflare e gere uma nova.
+- **Isolated test environment** — E2E tests use a dedicated bucket
+  (`R2_TEST_BUCKET`) separated from the default application bucket.
+
+- **Ignored environment files** — `.env` files are excluded from version
+  control. Only the `.env.example` template is versioned.
+
+- **CI and secrets** — CI credentials are provided through repository secrets
+  and are not exposed in workflow logs.
+
+If an access key is accidentally exposed, revoke it immediately through the
+Cloudflare dashboard and generate a new one.
