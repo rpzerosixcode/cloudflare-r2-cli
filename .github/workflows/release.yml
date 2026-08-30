@@ -71,8 +71,11 @@ jobs:
       - name: Build the gem
         run: bundle exec rake build
 
+      - name: Configure RubyGems credentials
+        uses: rubygems/configure-rubygems-credentials@v1
+
       - name: Publish to RubyGems
-        uses: rubygems/release-gem@v1
+        run: gem push pkg/cloudflare-r2-cli-${GITHUB_REF_NAME#v}.gem
 
       - name: Create GitHub Release
         env:
@@ -80,4 +83,4 @@ jobs:
         run: >
           gh release create "$GITHUB_REF_NAME" pkg/cloudflare-r2-cli-${GITHUB_REF_NAME#v}.gem
           --title "cloudflare-r2-cli ${GITHUB_REF_NAME}"
-          --notes "See the [changelog](https://github.com/rpzerosixcode/cloudflare-r2-cli/blob/main/CHANGELOG.md) for details.
+          --notes "See the [changelog](https://github.com/rpzerosixcode/cloudflare-r2-cli/blob/main/CHANGELOG.md) for details."
