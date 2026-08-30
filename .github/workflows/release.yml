@@ -56,7 +56,7 @@ jobs:
 
       - name: Verify version matches the tag
         run: |
-          version=$(ruby -e 'require "lib/r2/version"; print R2::VERSION')
+          version=$(ruby -e 'require_relative "lib/r2/version"; print R2::VERSION')
           if [ "$version" != "${GITHUB_REF_NAME#v}" ]; then
             echo "Version in lib/r2/version.rb ($version) does not match the tag (${GITHUB_REF_NAME#v})."
             exit 1
