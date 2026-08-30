@@ -44,9 +44,15 @@ jobs:
     needs: validate
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+      id-token: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Ruby
         uses: ruby/setup-ruby@v1
@@ -66,9 +72,7 @@ jobs:
         run: bundle exec rake build
 
       - name: Publish to RubyGems
-        env:
-          GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
-        run: gem push pkg/cloudflare-r2-cli-${GITHUB_REF_NAME#v}.gem
+        uses: rubygems/release-gem@v1
 
       - name: Create GitHub Release
         env:
@@ -76,4 +80,4 @@ jobs:
         run: >
           gh release create "$GITHUB_REF_NAME" pkg/cloudflare-r2-cli-${GITHUB_REF_NAME#v}.gem
           --title "cloudflare-r2-cli ${GITHUB_REF_NAME}"
-          --notes "See the [changelog](https://github.com/rpzerosixcode/cloudflare-r2-cli/blob/main/CHANGELOG.md) for details."
+          --notes "See the [changelog](https://github.com/rpzerosixcode/cloudflare-r2-cli/blob/main/CHANGELOG.md) for details.
