@@ -1,46 +1,69 @@
 # Roadmap
 
+The roadmap tracks the planned evolution of the project.
+
 ## MVP
 
-### Fase 1 — Preparação Inicial
+The MVP was completed through the phases below.
 
-Preparação da estrutura e das definições fundamentais do projeto.
+### Phase 1 — Initial Preparation
 
-### Fase 2 — Funcionalidades
+Initial structure and fundamental project definitions.
 
-Implementação das funcionalidades essenciais do MVP.
+### Phase 2 — Features
 
-#### Fase 2.1 — Upload
+Implementation of the essential MVP features.
 
-Implementação da funcionalidade de upload.
+#### Phase 2.1 — Upload
 
-#### Fase 2.2 — Delete
+Implementation of the upload feature.
 
-Implementação da funcionalidade de delete.
+#### Phase 2.2 — Delete
 
-#### Fase 2.3 — List
+Implementation of the delete feature.
 
-Implementação da funcionalidade de listagem.
+#### Phase 2.3 — List
 
-### Fase 3 — Cobertura de Testes
+Implementation of the list feature.
 
-Implementação e ampliação da cobertura de testes do projeto.
+### Phase 3 — Test Coverage
 
-### Fase 4 — Refinamento e Estabilização
+Implementation and expansion of the project's test coverage.
 
-Revisão, refinamento e estabilização do projeto.
+### Phase 4 — Refinement and Stabilization
 
-- **Portabilidade** — garantir o funcionamento da CLI em diferentes ambientes e sistemas operacionais.
-- **Consistência** — revisar e padronizar código, testes, mensagens e comportamentos.
-- **Tratamento de erros** — revisar o tratamento de exceções e garantir mensagens claras e seguras.
-- **Segurança** — revisar configurações e garantir que informações sensíveis não sejam expostas.
-- **Documentação** — revisar e completar a documentação necessária para instalação, uso e contribuição.
-- **Empacotamento** — validar a construção, instalação e execução do pacote distribuído.
-- **Integração contínua** — integrar o fluxo de CI ao processo de desenvolvimento, garantindo a execução automatizada dos testes e verificações do projeto.
-- **Validação final** — executar a suíte completa de testes e validar o funcionamento do projeto em um ambiente limpo.
+Review, refinement and stabilization of the project.
 
-### Fase 5 — Release
+- **Portability** — ensure the CLI works in different environments and operating systems.
+- **Consistency** — review and standardize code, tests, messages and behaviors.
+- **Error handling** — review exception handling and ensure clear, safe messages.
+- **Security** — review settings and ensure sensitive information is not exposed.
+- **Documentation** — review and update the public documentation according to the current state of the project.
+- **Development context** — remove or isolate documentation exclusively related to the development process.
+- **Packaging** — validate the build, installation and execution of the distributed package.
+- **Continuous integration** — integrate the CI flow into the development process, ensuring automated execution of tests and checks.
+- **Final validation** — run the full test suite and validate the project in a clean environment.
 
-Preparação da release e realização das revisões finais.
+### Phase 5 — Release
 
-> **Nota:** O foco será uma **base minimamente escalável** e as **funcionalidades essenciais**, não otimizações.
+Preparation and publication of the first stable version of the project.
+
+- **Versioning** — adopt semantic versioning from `1.0.0`.
+- **Changelog** — start formal changelog maintenance from `1.0.0`.
+- **Documentation** — normalize the public documentation according to the stable version.
+- **Development context** — remove or isolate development-specific documentation that is no longer relevant.
+- **MVP context** — remove or update MVP-specific notes and references that no longer apply to the stable version.
+- **Translation** — translate and standardize the project content to English.
+- **Release validation** — validate the version, build and release artifacts before publication.
+- **Publication** — publish the `cloudflare-r2-cli` package on RubyGems.
+- **Post-release validation** — install the published package in a clean environment and confirm it works.
+
+## Future Evolution
+
+Possible next steps for the project:
+
+- **Pagination and control of the number of returned objects** in the `list` command.
+- **Additional configuration sources** such as files and command-line flags.
+- **Multipart uploads** for large files.
+
+> **Note:** The focus will remain a **minimally scalable base** and **essential features**, not optimizations.

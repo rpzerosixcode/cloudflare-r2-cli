@@ -1,48 +1,65 @@
-# Desenvolvimento
+# Development
 
 ## Branches
 
-O projeto utiliza duas branches principais:
+The project uses two main branches:
 
-* `develop`: desenvolvimento.
-* `main`: versão estável.
+* `develop`: development.
+* `main`: stable version.
 
 ## Pull Requests
 
-As alterações entre branches devem ser realizadas por meio de Pull Requests.
+Changes between branches must be made through Pull Requests.
 
-Pull Requests devem ser claros, objetivos e passar pelas verificações necessárias antes do merge.
+Pull Requests must be clear, objective and pass the required checks before merging.
 
 ## Commits
 
-Os commits devem seguir a convenção **Conventional Commits**, utilizando tipos como:
+Commits must follow the **Conventional Commits** convention, using types such as:
 
-* `feat`: nova funcionalidade.
-* `fix`: correção de um problema.
-* `docs`: alteração na documentação.
-* `refactor`: refatoração sem alteração de comportamento.
-* `test`: criação ou alteração de testes.
-* `chore`: tarefas de manutenção.
+* `feat`: new feature.
+* `fix`: bug fix.
+* `docs`: documentation change.
+* `refactor`: refactoring without behavior change.
+* `test`: creation or change of tests.
+* `chore`: maintenance tasks.
 
-## Integração Contínua
+## Continuous Integration
 
-O projeto utiliza **GitHub Actions** para validar automaticamente as alterações
-a cada push nas branches `develop` e `main` e em Pull Requests.
+The project uses **GitHub Actions** to automatically validate changes on every
+push to the `develop` and `main` branches and on Pull Requests.
 
-O fluxo definido em `.github/workflows/ci.yml` executa:
+The workflow defined in `.github/workflows/ci.yml` runs:
 
-* **Matriz de ambientes** — Ubuntu, macOS e Windows, com Ruby `3.0` a `3.3`.
-* **Estilo** — RuboCop em todas as plataformas, incluindo a verificação do
-  fim de linha (LF).
-* **Testes** — suíte de unidade e integração.
-* **Empacotamento** — construção da gem (`rake build`).
-* **E2E** — executado no Ubuntu; os cenários são marcados como pendentes quando
-  as credenciais de teste não estão configuradas nos segredos
-  (`R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_ENDPOINT`, `R2_REGION` e
-  `R2_TEST_BUCKET`).
+* **Lint** — RuboCop.
+* **Tests** — unit, integration and E2E suites. The E2E scenarios are marked
+  as pending when the test credentials are not configured in the repository
+  secrets (`R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_ENDPOINT`,
+  `R2_REGION` and `R2_TEST_BUCKET`).
+* **Packaging** — gem build (`rake build`).
 
-## Princípios
+## Releases
 
-O desenvolvimento deve priorizar simplicidade, organização e manutenção do código.
+Releases are published from tags in the `v*` format (for example, `v1.0.0`).
 
-As alterações devem permanecer alinhadas ao escopo atual do projeto e sua documentação.
+The workflow defined in `.github/workflows/release.yml`:
+
+* validates the project (lint, tests and packaging);
+* publishes the gem to RubyGems using the `RUBYGEMS_API_KEY` repository secret;
+* creates a GitHub Release with the packed gem attached.
+
+To release a new version:
+
+1. Update the version in `lib/r2/version.rb` and the changelog in `CHANGELOG.md`.
+2. Merge the changes into `main`.
+3. Create and push the version tag:
+   ```console
+   $ git tag v1.0.0
+   $ git push origin v1.0.0
+   ```
+
+## Principles
+
+Development must prioritize simplicity, organization and code maintenance.
+
+Changes must remain aligned with the current scope of the project and its documentation.

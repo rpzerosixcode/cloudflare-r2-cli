@@ -1,19 +1,24 @@
 # CLI
 
-A CLI é responsável por interpretar as entradas do usuário, executar as ações correspondentes e apresentar os resultados.
+The CLI is responsible for interpreting the user's input, executing the
+corresponding actions and presenting the results.
 
-É utilizada a gem `thor` para definição e execução dos comandos.
+The `thor` gem is used to define and execute the commands.
 
-## Responsabilidade
+## Responsibility
 
-A CLI atua como um **orquestrador mínimo**, coordenando as operações em alto nível.
+The CLI acts as a **minimal orchestrator**, coordinating the operations at a
+high level.
 
-## Limites
+## Boundaries
 
-A CLI não deve implementar regras de negócio, manipular diretamente arquivos ou conhecer detalhes das implementações e serviços utilizados.
+The CLI must not implement business rules, directly handle files or know
+details of the implementations and services used.
 
-A execução das operações deve ser delegada aos componentes responsáveis.
+The execution of the operations must be delegated to the responsible
+components.
 
-## Comandos
+## Commands
 
-Os comandos disponíveis e seus comportamentos são documentados em [FEATURES.md](../FEATURES.md).
+The available commands and their behaviors are documented in
+[FEATURES.md](../FEATURES.md).

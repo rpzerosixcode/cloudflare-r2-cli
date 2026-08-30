@@ -3,22 +3,22 @@
 require "fileutils"
 require "securerandom"
 
-# Apoio à criação e remoção de arquivos temporários dos testes.
+# Support for creating and removing temporary test files.
 module TempFileHelper
-    # Diretório exclusivo dos arquivos temporários dos testes em processo.
+    # Exclusive directory of the temporary files of the in-process tests.
     #
-    # Isolado do diretório usado pelos testes E2E (`tmp/e2e`).
+    # Isolated from the directory used by the E2E tests (`tmp/e2e`).
     TEST_TMP_DIR = File.expand_path("../../tmp/spec", __dir__).freeze
 
-    # Cria um arquivo temporário único para ser usado nos testes.
+    # Creates a unique temporary file to be used in tests.
     #
-    # Os arquivos ficam restritos a `tmp/spec/`, conforme as diretrizes do
-    # projeto, e são removidos automaticamente após cada exemplo.
+    # The files are restricted to `tmp/spec/`, according to the project
+    # guidelines, and are removed automatically after each example.
     #
-    # @param prefix [String] prefixo do nome do arquivo
-    # @param content [String] conteúdo do arquivo
-    # @return [String] caminho do arquivo criado
-    def create_temp_file(prefix: "teste", content: "conteudo de teste")
+    # @param prefix [String] prefix of the file name
+    # @param content [String] content of the file
+    # @return [String] path of the created file
+    def create_temp_file(prefix: "test", content: "test content")
         FileUtils.mkdir_p(TEST_TMP_DIR)
 
         path = File.join(TEST_TMP_DIR, "#{prefix}-#{SecureRandom.hex(4)}.jpg")
@@ -27,7 +27,7 @@ module TempFileHelper
         path
     end
 
-    # Remove os arquivos temporários criados durante os testes.
+    # Removes the temporary files created during the tests.
     def cleanup_temp_files!
         FileUtils.rm_rf(TEST_TMP_DIR)
     end

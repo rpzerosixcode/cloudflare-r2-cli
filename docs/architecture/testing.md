@@ -1,44 +1,48 @@
-# Testes
+# Testing
 
-Cada tipo de teste possui uma pasta própria, mantendo objetivos e responsabilidades separados.
+Each test type has its own folder, keeping objectives and responsibilities
+separated.
 
-## Testes Unitários
+## Unit Tests
 
-Localizados em `spec/unit/`.
+Located in `spec/unit/`.
 
-Testam componentes isoladamente.
+Test components in isolation.
 
-## Testes de Integração
+## Integration Tests
 
-Localizados em `spec/integration/`.
+Located in `spec/integration/`.
 
-Testam a interação entre componentes.
+Test the interaction between components.
 
-## Testes E2E
+## E2E Tests
 
-Localizados em `spec/e2e/`.
+Located in `spec/e2e/`.
 
-Focam nos fluxos principais e resultados esperados, mantendo os cenários simples e sem testar detalhes internos.
+Focus on the main flows and expected results, keeping the scenarios simple and
+avoiding tests of internal implementation details.
 
-## Ambiente
+## Environment
 
-Os testes utilizam exclusivamente o bucket `test-bucket`, configurável por `R2_TEST_BUCKET`.
+Tests use a dedicated bucket configured through `R2_TEST_BUCKET`.
 
-Arquivos temporários devem permanecer em `tmp/`, que deve estar no `.gitignore`.
+Temporary files must remain in `tmp/`, which must be included in `.gitignore`.
 
-Os recursos criados pelos testes devem ser limpos ao final da execução sempre que possível. Os testes E2E removem os objetos enviados ao final de cada cenário.
+Resources created by tests must be cleaned up at the end of execution whenever
+possible. E2E tests remove uploaded objects at the end of each scenario.
 
-As credenciais podem ser fornecidas pelo `.env` ou pelo ambiente.
+Credentials can be provided through the `.env` file or the environment.
 
-## Cobertura
+## Coverage
 
-Os testes devem cobrir os principais comportamentos, incluindo cenários de sucesso e erro.
+Tests must cover the main behaviors, including success and error scenarios.
 
-Os testes E2E são uma exceção: devem permanecer extremamente simples e focados apenas nos fluxos principais.
+E2E tests are an exception: they must remain extremely simple and focused only
+on the main user flows.
 
-## Execução
+## Execution
 
-Executar toda a suíte:
+Run the full test suite:
 
 ```console
 $ bundle exec rake

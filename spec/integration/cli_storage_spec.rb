@@ -3,7 +3,7 @@
 require "spec_helper"
 require "r2"
 
-RSpec.describe "CLI integrada ao armazenamento", type: :integration do
+RSpec.describe "CLI integrated with the storage", type: :integration do
     include CliRunner
     include TempFileHelper
 
@@ -17,35 +17,35 @@ RSpec.describe "CLI integrada ao armazenamento", type: :integration do
         let(:file) { create_temp_file(prefix: "upload") }
         let(:key) { File.basename(file) }
 
-        context "em caso de sucesso" do
-            it "envia um arquivo para o bucket e usa o nome do arquivo como chave" do
+        context "on success" do
+            it "uploads a file to the bucket using the file name as the key" do
                 expect { run_cli("upload", file) }
-                    .to output("Imagem enviada com sucesso: #{key}\n").to_stdout
+                    .to output("Image uploaded successfully: #{key}\n").to_stdout
 
                 expect(client.uploads.size).to eq(1)
-                expect(client.uploads.first[:bucket]).to eq("bucket-integracao")
+                expect(client.uploads.first[:bucket]).to eq("integration-bucket")
                 expect(client.uploads.first[:key]).to eq(key)
                 expect(client.uploads.first[:body]).to be_a(File)
             end
         end
 
-        context "quando o arquivo não existe" do
-            it "exibe o erro e encerra com código de status 1" do
-                nonexistent = File.join("tmp", "spec", "inexistente.jpg")
+        context "when the file does not exist" do
+            it "shows the error and exits with status code 1" do
+                nonexistent = File.join("tmp", "spec", "missing.jpg")
 
                 run_cli_and_expect_failure(
                     "upload",
                     nonexistent,
-                    message: "Arquivo não encontrado: #{nonexistent}"
+                    message: "File not found: #{nonexistent}"
                 )
             end
         end
 
-        context "quando o armazenamento falha" do
-            it "exibe o erro e encerra com código de status 1" do
+        context "when the storage fails" do
+            it "shows the error and exits with status code 1" do
                 client.fail_on(:upload)
 
-                run_cli_and_expect_failure("upload", file, message: "simulacao de falha")
+                run_cli_and_expect_failure("upload", file, message: "simulated failure")
 
                 expect(client.uploads).to be_empty
             end
@@ -53,64 +53,64 @@ RSpec.describe "CLI integrada ao armazenamento", type: :integration do
     end
 
     describe "list" do
-        context "quando existem objetos" do
+        context "when there are objects" do
             let(:client) { FakeS3Client.new(objects: %w[a.jpg b.png]) }
 
-            it "lista os objetos armazenados no bucket" do
+            it "lists the objects stored in the bucket" do
                 expect { run_cli("list") }
                     .to output("a.jpg\nb.png\n").to_stdout
             end
         end
 
-        context "quando não existem objetos" do
-            it "não exibe nada" do
+        context "when there are no objects" do
+            it "does not display anything" do
                 expect { run_cli("list") }.not_to output.to_stdout
             end
         end
 
-        context "quando o armazenamento falha" do
-            it "exibe o erro e encerra com código de status 1" do
+        context "when the storage fails" do
+            it "shows the error and exits with status code 1" do
                 client.fail_on(:list)
 
-                run_cli_and_expect_failure("list", message: "simulacao de falha")
+                run_cli_and_expect_failure("list", message: "simulated failure")
             end
         end
     end
 
     describe "delete" do
-        context "em caso de sucesso" do
-            it "exclui o objeto do bucket" do
-                expect { run_cli("delete", "foto.jpg") }
-                    .to output("Arquivo excluído com sucesso: foto.jpg\n").to_stdout
+        context "on success" do
+            it "deletes the object from the bucket" do
+                expect { run_cli("delete", "photo.jpg") }
+                    .to output("File deleted successfully: photo.jpg\n").to_stdout
 
                 expect(client.deletes.size).to eq(1)
-                expect(client.deletes.first[:bucket]).to eq("bucket-integracao")
-                expect(client.deletes.first[:key]).to eq("foto.jpg")
+                expect(client.deletes.first[:bucket]).to eq("integration-bucket")
+                expect(client.deletes.first[:key]).to eq("photo.jpg")
             end
         end
 
-        context "quando o armazenamento falha" do
-            it "exibe o erro e encerra com código de status 1" do
+        context "when the storage fails" do
+            it "shows the error and exits with status code 1" do
                 client.fail_on(:delete)
 
-                run_cli_and_expect_failure("delete", "foto.jpg", message: "simulacao de falha")
+                run_cli_and_expect_failure("delete", "photo.jpg", message: "simulated failure")
             end
         end
     end
 
-    describe "ciclo completo" do
-        it "realiza upload, list e delete em conjunto" do
-            file = create_temp_file(prefix: "ciclo")
+    describe "full cycle" do
+        it "performs upload, list and delete together" do
+            file = create_temp_file(prefix: "cycle")
             key = File.basename(file)
 
             expect { run_cli("upload", file) }
-                .to output("Imagem enviada com sucesso: #{key}\n").to_stdout
+                .to output("Image uploaded successfully: #{key}\n").to_stdout
 
             expect { run_cli("list") }
                 .to output(/#{Regexp.escape(key)}/).to_stdout
 
             expect { run_cli("delete", key) }
-                .to output("Arquivo excluído com sucesso: #{key}\n").to_stdout
+                .to output("File deleted successfully: #{key}\n").to_stdout
 
             expect { run_cli("list") }
                 .to output("").to_stdout

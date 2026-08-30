@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-# Expectativas sobre o encerramento da CLI.
+# Expectations about the CLI termination.
 module CliExpectations
-    # Espera que o bloco encerre a CLI com o código de status informado.
+    # Expects the block to terminate the CLI with the given status code.
     def expect_cli_to_exit(status, &)
         expect(&)
             .to raise_error(SystemExit) { |error| expect(error.status).to eq(status) }
