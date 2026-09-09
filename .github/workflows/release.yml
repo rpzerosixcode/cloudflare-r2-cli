@@ -72,7 +72,7 @@ jobs:
         run: bundle exec rake build
 
       - name: Configure RubyGems credentials
-        uses: rubygems/configure-rubygems-credentials@v1
+        uses: rubygems/configure-rubygems-credentials@main
 
       - name: Publish to RubyGems
         run: gem push pkg/cloudflare-r2-cli-${GITHUB_REF_NAME#v}.gem
