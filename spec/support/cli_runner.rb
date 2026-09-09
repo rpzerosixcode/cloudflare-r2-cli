@@ -31,6 +31,25 @@ module CliRunner
         with_r2_env(env) { R2::CLI.start(args) }
     end
 
+    # Runs the CLI capturing both standard and error outputs.
+    #
+    # @return [Array<String>] captured standard and error outputs
+    def capture_cli_streams(*args, env: DEFAULT_TEST_ENV)
+        stdout = StringIO.new
+        stderr = StringIO.new
+        original_stdout = $stdout
+        original_stderr = $stderr
+        $stdout = stdout
+        $stderr = stderr
+
+        with_r2_env(env) { R2::CLI.start(args) }
+
+        [stdout.string, stderr.string]
+    ensure
+        $stdout = original_stdout
+        $stderr = original_stderr
+    end
+
     # Runs the CLI expecting termination with an error (status code 1) and
     # ensures that the expected error message is shown on the error output.
     def run_cli_and_expect_failure(*args, message:, env: DEFAULT_TEST_ENV)

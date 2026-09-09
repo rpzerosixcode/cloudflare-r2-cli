@@ -31,6 +31,10 @@ module R2
         class BucketNotFoundError < Error
         end
 
+        # The requested object does not exist in the bucket.
+        class ObjectNotFoundError < Error
+        end
+
         # Network failure while communicating with Cloudflare R2.
         class NetworkError < Error
         end

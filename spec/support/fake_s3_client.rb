@@ -16,14 +16,17 @@ class FakeS3Client
     # Error raised when a failure scenario is configured.
     Failure = Class.new(StandardError)
 
-    attr_reader :uploads, :deletes, :last_list_bucket
+    attr_reader :uploads, :deletes, :downloads, :last_list_bucket
 
     # @param objects [Array<String>] keys of the objects already in the bucket
     def initialize(objects: [])
         @objects = objects.dup
         @uploads = []
         @deletes = []
+        @downloads = []
         @failures = {}
+        @stored = {}
+        objects.each { |key| @stored[key] = "content of #{key}" }
     end
 
     # Configures a failure scenario for a specific operation.
@@ -34,12 +37,24 @@ class FakeS3Client
         @failures[operation] = message
     end
 
+    # Reads the simulated content stored for the given key.
+    #
+    # @param key [String] object key
+    # @return [String, nil] stored content
+    def content_for(key)
+        @stored[key]
+    end
+
     # Simulates the creation of an object in the bucket.
     def put_object(bucket:, key:, body:)
         raise_failure!(:upload)
 
+        content = body.respond_to?(:read) ? body.read : body
+        body.rewind if body.respond_to?(:rewind)
+
         @uploads << { bucket: bucket, key: key, body: body }
-        @objects << key
+        @objects << key unless @objects.include?(key)
+        @stored[key] = content
 
         nil
     end
@@ -50,6 +65,25 @@ class FakeS3Client
 
         @deletes << { bucket: bucket, key: key }
         @objects.delete(key)
+        @stored.delete(key)
+
+        nil
+    end
+
+    # Simulates the download of an object from the bucket.
+    def get_object(bucket:, key:, response_target:)
+        raise_failure!(:download)
+
+        content = @stored[key]
+        raise Failure, "object does not exist" if content.nil?
+
+        @downloads << { bucket: bucket, key: key, response_target: response_target }
+
+        if response_target.respond_to?(:write)
+            response_target.write(content)
+        else
+            File.binwrite(response_target.to_s, content)
+        end
 
         nil
     end

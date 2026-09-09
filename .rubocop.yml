@@ -69,3 +69,20 @@ Metrics/ModuleLength:
 # Methods with multiple error conversion clauses may be slightly longer.
 Metrics/MethodLength:
   Max: 15
+  Exclude:
+    - "lib/r2/storage.rb"
+
+# Methods mapping domain errors concentrate conversion clauses.
+Metrics/CyclomaticComplexity:
+  Exclude:
+    - "lib/r2/storage.rb"
+
+# The CLI orchestrates user input and delegates to responsible components.
+Metrics/ClassLength:
+  Exclude:
+    - "lib/r2/cli.rb"
+
+# Commands emit diagnostics before delegating to collaborators.
+Metrics/AbcSize:
+  Exclude:
+    - "lib/r2/cli.rb"

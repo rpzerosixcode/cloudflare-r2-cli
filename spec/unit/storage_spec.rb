@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 require "spec_helper"
+require "r2/logging"
 require "r2/storage"
+require "stringio"
 
 RSpec.describe R2::Storage do
     let(:config) do
@@ -83,6 +85,22 @@ RSpec.describe R2::Storage do
             perform
         end
 
+        it "writes diagnostics to the injected logger" do
+            log_output = StringIO.new
+            logged = described_class.new(config, logger: R2::Logging.build(verbose: true, output: log_output))
+            allow(client).to receive(:put_object)
+
+            logged.upload(key: "photo.jpg", body: "content")
+
+            expect(log_output.string).to include("photo.jpg")
+        end
+
+        it "ignores diagnostics without an injected logger" do
+            allow(client).to receive(:put_object)
+
+            expect { storage.upload(key: "photo.jpg", body: "content") }.not_to raise_error
+        end
+
         it_behaves_like "mapping client failures to domain errors"
     end
 
@@ -97,6 +115,35 @@ RSpec.describe R2::Storage do
             )
 
             perform
+        end
+
+        it_behaves_like "mapping client failures to domain errors"
+    end
+
+    describe "#download" do
+        let(:operation) { :get_object }
+        let(:perform) { storage.download(key: "photo.jpg", destination: "photo.jpg") }
+
+        it "streams the object content to the destination file" do
+            destination = File.join(TempFileHelper::TEST_TMP_DIR, "photo.jpg")
+            FileUtils.mkdir_p(TempFileHelper::TEST_TMP_DIR)
+
+            expect(client).to receive(:get_object) do |bucket:, key:, response_target:|
+                expect(bucket).to eq("test-bucket")
+                expect(key).to eq("photo.jpg")
+                response_target.write("file content")
+            end
+
+            expect(storage.download(key: "photo.jpg", destination: destination)).to eq(destination)
+            expect(File.binread(destination)).to eq("file content")
+        end
+
+        it "maps a missing object to ObjectNotFoundError" do
+            allow(client).to receive(operation)
+                .and_raise(Aws::S3::Errors::NoSuchKey.new(nil, "object does not exist"))
+
+            expect { perform }
+                .to raise_error(R2::Errors::ObjectNotFoundError, "Object not found: photo.jpg")
         end
 
         it_behaves_like "mapping client failures to domain errors"
