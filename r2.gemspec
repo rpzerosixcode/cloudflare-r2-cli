@@ -15,7 +15,7 @@ Gem::Specification.new do |spec|
     spec.required_ruby_version = Gem::Requirement.new(">= 3.3.0")
 
     spec.files = Dir.chdir(__dir__) do
-        Dir["bin/**/*", "lib/**/*", "docs/**/*", "CHANGELOG.md", "LICENCE", "README.md", "Rakefile"]
+        Dir["bin/**/*", "lib/**/*", "docs/**/*", "CHANGELOG.md", "LICENSE", "README.md", "Rakefile"]
     end
 
     spec.bindir        = "bin"

@@ -20,12 +20,20 @@ RSpec.describe "CLI integrated with the storage", type: :integration do
         context "on success" do
             it "uploads a file to the bucket using the file name as the key" do
                 expect { run_cli("upload", file) }
-                    .to output("Image uploaded successfully: #{key}\n").to_stdout
+                    .to output("Uploaded successfully: #{key}\n").to_stdout
 
                 expect(client.uploads.size).to eq(1)
                 expect(client.uploads.first[:bucket]).to eq("integration-bucket")
                 expect(client.uploads.first[:key]).to eq(key)
                 expect(client.uploads.first[:body]).to be_a(File)
+            end
+
+            it "uploads a file using a custom key when --key is given" do
+                expect { run_cli("upload", file, "--key", "uploads/custom.jpg") }
+                    .to output("Uploaded successfully: uploads/custom.jpg\n").to_stdout
+
+                expect(client.uploads.first[:key]).to eq("uploads/custom.jpg")
+                expect(client.content_for("uploads/custom.jpg")).not_to be_nil
             end
         end
 
@@ -77,11 +85,75 @@ RSpec.describe "CLI integrated with the storage", type: :integration do
         end
     end
 
+    describe "download" do
+        let(:client) { FakeS3Client.new(objects: %w[photo.jpg]) }
+
+        context "on success" do
+            it "downloads the object to a file with the key base name" do
+                Dir.mktmpdir do |directory|
+                    Dir.chdir(directory) do
+                        expect { run_cli("download", "photo.jpg") }
+                            .to output("Downloaded successfully: photo.jpg\n").to_stdout
+
+                        expect(File.binread("photo.jpg")).to eq("content of photo.jpg")
+                        expect(client.downloads.size).to eq(1)
+                        expect(client.downloads.first[:bucket]).to eq("integration-bucket")
+                        expect(client.downloads.first[:key]).to eq("photo.jpg")
+                    end
+                end
+            end
+
+            it "downloads the object to a custom destination when --output is given" do
+                destination = File.join(TempFileHelper::TEST_TMP_DIR, "custom.jpg")
+                FileUtils.mkdir_p(TempFileHelper::TEST_TMP_DIR)
+
+                expect { run_cli("download", "photo.jpg", "--output", destination) }
+                    .to output("Downloaded successfully: #{destination}\n").to_stdout
+
+                expect(File.binread(destination)).to eq("content of photo.jpg")
+            end
+        end
+
+        context "when the object does not exist" do
+            it "shows the error and exits with status code 1" do
+                Dir.mktmpdir do |directory|
+                    Dir.chdir(directory) do
+                        run_cli_and_expect_failure("download", "missing.jpg", message: "object does not exist")
+                    end
+                end
+            end
+        end
+
+        context "when the storage fails" do
+            it "shows the error and exits with status code 1" do
+                client.fail_on(:download)
+
+                Dir.mktmpdir do |directory|
+                    Dir.chdir(directory) do
+                        run_cli_and_expect_failure("download", "photo.jpg", message: "simulated failure")
+                    end
+                end
+            end
+        end
+
+        context "with --verbose" do
+            it "writes detailed information to the error output" do
+                Dir.mktmpdir do |directory|
+                    Dir.chdir(directory) do
+                        _stdout, stderr = capture_cli_streams("download", "photo.jpg", "--verbose")
+
+                        expect(stderr).to include("Starting download")
+                    end
+                end
+            end
+        end
+    end
+
     describe "delete" do
         context "on success" do
             it "deletes the object from the bucket" do
                 expect { run_cli("delete", "photo.jpg") }
-                    .to output("File deleted successfully: photo.jpg\n").to_stdout
+                    .to output("Deleted successfully: photo.jpg\n").to_stdout
 
                 expect(client.deletes.size).to eq(1)
                 expect(client.deletes.first[:bucket]).to eq("integration-bucket")
@@ -99,18 +171,27 @@ RSpec.describe "CLI integrated with the storage", type: :integration do
     end
 
     describe "full cycle" do
-        it "performs upload, list and delete together" do
+        it "performs upload, download, list and delete together" do
             file = create_temp_file(prefix: "cycle")
             key = File.basename(file)
 
             expect { run_cli("upload", file) }
-                .to output("Image uploaded successfully: #{key}\n").to_stdout
+                .to output("Uploaded successfully: #{key}\n").to_stdout
 
             expect { run_cli("list") }
                 .to output(/#{Regexp.escape(key)}/).to_stdout
 
+            Dir.mktmpdir do |directory|
+                Dir.chdir(directory) do
+                    expect { run_cli("download", key) }
+                        .to output("Downloaded successfully: #{key}\n").to_stdout
+
+                    expect(File.exist?(key)).to be(true)
+                end
+            end
+
             expect { run_cli("delete", key) }
-                .to output("File deleted successfully: #{key}\n").to_stdout
+                .to output("Deleted successfully: #{key}\n").to_stdout
 
             expect { run_cli("list") }
                 .to output("").to_stdout

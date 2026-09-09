@@ -106,7 +106,7 @@ module E2EHelper
     # a warning, avoiding the cleanup marking an already validated scenario
     # as failed.
     def cleanup_external_data!
-        keys = tracked_files.map { |path| File.basename(path) }.uniq
+        keys = tracked_keys_for_cleanup
         return if keys.empty? || missing_required_env?
 
         keys.each { |key| external_storage.delete(key: key) }
@@ -114,11 +114,17 @@ module E2EHelper
         warn "Warning: could not clean up the external objects in the test bucket: #{e.message}"
     ensure
         tracked_files.clear
+        tracked_keys.clear
     end
 
     # Paths of the files created during the tests not yet cleaned up.
     def tracked_files
         @tracked_files ||= []
+    end
+
+    # Object keys uploaded during the tests with a custom key.
+    def tracked_keys
+        @tracked_keys ||= []
     end
 
     # Storage used to clean up the external objects.
@@ -134,7 +140,7 @@ module E2EHelper
             ENV.fetch("R2_ENDPOINT")
         )
 
-        R2::Storage.new(config)
+        R2::Storage.new(config, logger: R2::Logging.build(verbose: false))
     end
 
     # Applies a line of the `.env` file to the environment, when valid.
@@ -173,6 +179,11 @@ module E2EHelper
     # Indicates whether any required environment variable is missing.
     def missing_required_env?
         REQUIRED_VARS.any? { |variable| !ENV.key?(variable) }
+    end
+
+    # Collects the object keys uploaded during the tests.
+    def tracked_keys_for_cleanup
+        (tracked_files.map { |path| File.basename(path) } + tracked_keys).uniq
     end
 
     module_function :load_test_env!,
