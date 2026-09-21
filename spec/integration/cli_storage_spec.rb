@@ -5,6 +5,7 @@ require "r2"
 
 RSpec.describe "CLI integrated with the storage", type: :integration do
     include CliRunner
+    include StdinHelper
     include TempFileHelper
 
     let(:client) { FakeS3Client.new }
@@ -34,6 +35,13 @@ RSpec.describe "CLI integrated with the storage", type: :integration do
 
                 expect(client.uploads.first[:key]).to eq("uploads/custom.jpg")
                 expect(client.content_for("uploads/custom.jpg")).not_to be_nil
+            end
+
+            it "defines the content type from the object key" do
+                stdout, = capture_cli_streams("upload", file)
+
+                expect(stdout).to eq("Uploaded successfully: #{key}\n")
+                expect(client.uploads.first[:content_type]).to eq("image/jpeg")
             end
         end
 
@@ -67,6 +75,34 @@ RSpec.describe "CLI integrated with the storage", type: :integration do
             it "lists the objects stored in the bucket" do
                 expect { run_cli("list") }
                     .to output("a.jpg\nb.png\n").to_stdout
+            end
+        end
+
+        context "when the bucket has more objects than a single page" do
+            let(:client) { FakeS3Client.new(objects: %w[a.jpg b.png c.txt d.pdf e.json], page_size: 2) }
+
+            it "follows the pagination until the last page" do
+                expect { run_cli("list") }
+                    .to output("a.jpg\nb.png\nc.txt\nd.pdf\ne.json\n").to_stdout
+
+                expect(client.list_requests.size).to eq(3)
+                expect(client.list_requests.first).to include(bucket: "integration-bucket", prefix: nil)
+                expect(client.list_requests.last[:continuation_token]).to eq("4")
+            end
+        end
+
+        context "with --prefix" do
+            let(:client) { FakeS3Client.new(objects: %w[uploads/a.jpg uploads/b.png other.jpg]) }
+
+            it "lists only the objects whose keys start with the prefix" do
+                expect { run_cli("list", "--prefix", "uploads/") }
+                    .to output("uploads/a.jpg\nuploads/b.png\n").to_stdout
+
+                expect(client.list_requests.first[:prefix]).to eq("uploads/")
+            end
+
+            it "does not display anything when no object matches the prefix" do
+                expect { run_cli("list", "--prefix", "missing/") }.not_to output.to_stdout
             end
         end
 
@@ -118,7 +154,11 @@ RSpec.describe "CLI integrated with the storage", type: :integration do
             it "shows the error and exits with status code 1" do
                 Dir.mktmpdir do |directory|
                     Dir.chdir(directory) do
-                        run_cli_and_expect_failure("download", "missing.jpg", message: "object does not exist")
+                        run_cli_and_expect_failure(
+                            "download",
+                            "missing.jpg",
+                            message: "Object not found: missing.jpg"
+                        )
                     end
                 end
             end
@@ -151,8 +191,8 @@ RSpec.describe "CLI integrated with the storage", type: :integration do
 
     describe "delete" do
         context "on success" do
-            it "deletes the object from the bucket" do
-                expect { run_cli("delete", "photo.jpg") }
+            it "deletes the object from the bucket with --force" do
+                expect { run_cli("delete", "photo.jpg", "--force") }
                     .to output("Deleted successfully: photo.jpg\n").to_stdout
 
                 expect(client.deletes.size).to eq(1)
@@ -161,17 +201,97 @@ RSpec.describe "CLI integrated with the storage", type: :integration do
             end
         end
 
+        context "with an interactive confirmation" do
+            it "deletes the object when the user confirms" do
+                with_fake_stdin("y\n") do
+                    stdout, = capture_cli_streams("delete", "photo.jpg")
+
+                    expect(stdout).to eq(
+                        %(Delete "photo.jpg" from the bucket? [y/N] Deleted successfully: photo.jpg\n)
+                    )
+                end
+
+                expect(client.deletes.first[:key]).to eq("photo.jpg")
+            end
+
+            it "cancels the deletion when the user declines" do
+                allow(client).to receive(:delete_object)
+
+                with_fake_stdin("n\n") do
+                    expect { expect_cli_to_exit(1) { run_cli("delete", "photo.jpg") } }
+                        .to output(%(Delete "photo.jpg" from the bucket? [y/N] )).to_stdout
+                        .and output(/Error: Deletion aborted: photo.jpg/).to_stderr
+                end
+
+                expect(client).not_to have_received(:delete_object)
+            end
+        end
+
+        context "without an interactive input" do
+            it "requires --force and exits with status code 1" do
+                allow(client).to receive(:delete_object)
+
+                with_fake_stdin(interactive: false) do
+                    run_cli_and_expect_failure(
+                        "delete",
+                        "photo.jpg",
+                        message: "Deletion of photo.jpg requires confirmation"
+                    )
+                end
+
+                expect(client).not_to have_received(:delete_object)
+            end
+        end
+
         context "when the storage fails" do
             it "shows the error and exits with status code 1" do
                 client.fail_on(:delete)
 
-                run_cli_and_expect_failure("delete", "photo.jpg", message: "simulated failure")
+                run_cli_and_expect_failure("delete", "photo.jpg", "--force", message: "simulated failure")
+            end
+        end
+    end
+
+    describe "exists" do
+        context "when the object exists" do
+            let(:client) { FakeS3Client.new(objects: %w[photo.jpg]) }
+
+            it "reports that the object exists" do
+                expect { run_cli("exists", "photo.jpg") }
+                    .to output("Object exists: photo.jpg\n").to_stdout
+
+                expect(client.heads.first[:key]).to eq("photo.jpg")
+            end
+
+            it "reports that an uploaded object exists" do
+                file = create_temp_file(prefix: "exists")
+                key = File.basename(file)
+
+                capture_cli_streams("upload", file)
+
+                expect { run_cli("exists", key) }
+                    .to output("Object exists: #{key}\n").to_stdout
+            end
+        end
+
+        context "when the object does not exist" do
+            it "reports that the object was not found and exits with status code 1" do
+                expect { expect_cli_to_exit(1) { run_cli("exists", "missing.jpg") } }
+                    .to output("Object not found: missing.jpg\n").to_stdout
+            end
+        end
+
+        context "when the storage fails" do
+            it "shows the error and exits with status code 1" do
+                client.fail_on(:exists)
+
+                run_cli_and_expect_failure("exists", "photo.jpg", message: "simulated failure")
             end
         end
     end
 
     describe "full cycle" do
-        it "performs upload, download, list and delete together" do
+        it "performs upload, exists, download, list and delete together" do
             file = create_temp_file(prefix: "cycle")
             key = File.basename(file)
 
@@ -190,8 +310,14 @@ RSpec.describe "CLI integrated with the storage", type: :integration do
                 end
             end
 
-            expect { run_cli("delete", key) }
+            expect { run_cli("exists", key) }
+                .to output("Object exists: #{key}\n").to_stdout
+
+            expect { run_cli("delete", key, "--force") }
                 .to output("Deleted successfully: #{key}\n").to_stdout
+
+            expect { expect_cli_to_exit(1) { run_cli("exists", key) } }
+                .to output("Object not found: #{key}\n").to_stdout
 
             expect { run_cli("list") }
                 .to output("").to_stdout

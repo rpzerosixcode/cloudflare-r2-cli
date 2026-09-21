@@ -7,6 +7,7 @@ require "tmpdir"
 
 RSpec.describe R2::CLI do
     include CliExpectations
+    include StdinHelper
     include TempFileHelper
 
     let(:configuration) { instance_double(R2::Configuration) }
@@ -222,17 +223,90 @@ RSpec.describe R2::CLI do
     end
 
     describe "#delete" do
-        context "on success" do
-            it "deletes the file from the storage" do
+        let(:forced_cli) do
+            described_class.new([], configuration: configuration, storage: storage).tap do |instance|
+                allow(instance).to receive(:options).and_return({ force: true })
+            end
+        end
+
+        context "with --force" do
+            it "deletes the file without asking for confirmation" do
                 expect(storage).to receive(:delete).with(key: "photo.jpg")
 
-                expect { cli.delete("photo.jpg") }
+                expect { forced_cli.delete("photo.jpg") }
                     .to output("Deleted successfully: photo.jpg\n").to_stdout
+            end
+        end
+
+        context "with an interactive confirmation" do
+            before { allow(cli).to receive(:options).and_return({ force: false }) }
+
+            it "deletes the file when the user confirms" do
+                expect(storage).to receive(:delete).with(key: "photo.jpg")
+
+                with_fake_stdin("y\n") do
+                    expect { cli.delete("photo.jpg") }
+                        .to output(%(Delete "photo.jpg" from the bucket? [y/N] Deleted successfully: photo.jpg\n))
+                        .to_stdout
+                end
+            end
+
+            it "accepts 'yes' as an affirmative answer" do
+                expect(storage).to receive(:delete).with(key: "photo.jpg")
+
+                with_fake_stdin("yes\n") do
+                    expect { cli.delete("photo.jpg") }
+                        .to output(/Deleted successfully: photo.jpg\n/).to_stdout
+                end
+            end
+
+            it "does not delete the file when the user declines" do
+                allow(storage).to receive(:delete)
+
+                expect(cli).to receive(:warn).with("Error: Deletion aborted: photo.jpg")
+
+                with_fake_stdin("n\n") do
+                    expect { expect_cli_to_exit(1) { cli.delete("photo.jpg") } }
+                        .to output(%(Delete "photo.jpg" from the bucket? [y/N] )).to_stdout
+                end
+
+                expect(storage).not_to have_received(:delete)
+            end
+
+            it "does not delete the file when no answer is given" do
+                allow(storage).to receive(:delete)
+
+                expect(cli).to receive(:warn).with("Error: Deletion aborted: photo.jpg")
+
+                with_fake_stdin do
+                    expect { expect_cli_to_exit(1) { cli.delete("photo.jpg") } }
+                        .to output(%(Delete "photo.jpg" from the bucket? [y/N] )).to_stdout
+                end
+
+                expect(storage).not_to have_received(:delete)
+            end
+        end
+
+        context "without an interactive input" do
+            before { allow(cli).to receive(:options).and_return({ force: false }) }
+
+            it "requires --force and exits with status code 1" do
+                allow(storage).to receive(:delete)
+
+                expect(cli).to receive(:warn)
+                    .with(/Error: Deletion of photo.jpg requires confirmation/)
+
+                with_fake_stdin(interactive: false) do
+                    expect_cli_to_exit(1) { cli.delete("photo.jpg") }
+                end
+
+                expect(storage).not_to have_received(:delete)
             end
         end
 
         context "when the storage fails" do
             it "shows the error and exits with status code 1" do
+                allow(cli).to receive(:options).and_return({ force: true })
                 allow(storage).to receive(:delete).and_raise(R2::Errors::Error, "invalid bucket")
 
                 expect(cli).to receive(:warn).with("Error: invalid bucket")
@@ -245,7 +319,7 @@ RSpec.describe R2::CLI do
     describe "#list" do
         context "when there are objects" do
             it "displays each object on its own line" do
-                allow(storage).to receive(:list).and_return(%w[a.jpg b.png])
+                allow(storage).to receive(:list).with(prefix: nil).and_return(%w[a.jpg b.png])
 
                 expect { cli.list }.to output("a.jpg\nb.png\n").to_stdout
             end
@@ -253,9 +327,18 @@ RSpec.describe R2::CLI do
 
         context "when there are no objects" do
             it "does not display anything" do
-                allow(storage).to receive(:list).and_return([])
+                allow(storage).to receive(:list).with(prefix: nil).and_return([])
 
                 expect { cli.list }.not_to output.to_stdout
+            end
+        end
+
+        context "with --prefix" do
+            it "lists only the objects whose keys start with the prefix" do
+                allow(cli).to receive(:options).and_return({ prefix: "uploads/" })
+                expect(storage).to receive(:list).with(prefix: "uploads/").and_return(["uploads/a.jpg"])
+
+                expect { cli.list }.to output("uploads/a.jpg\n").to_stdout
             end
         end
 
@@ -266,6 +349,36 @@ RSpec.describe R2::CLI do
                 expect(cli).to receive(:warn).with("Error: invalid bucket")
 
                 expect_cli_to_exit(1) { cli.list }
+            end
+        end
+    end
+
+    describe "#exists" do
+        context "when the object exists" do
+            it "reports that the object exists" do
+                allow(storage).to receive(:exists?).with(key: "photo.jpg").and_return(true)
+
+                expect { cli.exists("photo.jpg") }
+                    .to output("Object exists: photo.jpg\n").to_stdout
+            end
+        end
+
+        context "when the object does not exist" do
+            it "reports that the object was not found and exits with status code 1" do
+                allow(storage).to receive(:exists?).with(key: "photo.jpg").and_return(false)
+
+                expect { expect_cli_to_exit(1) { cli.exists("photo.jpg") } }
+                    .to output("Object not found: photo.jpg\n").to_stdout
+            end
+        end
+
+        context "when the storage fails" do
+            it "shows the error and exits with status code 1" do
+                allow(storage).to receive(:exists?).and_raise(R2::Errors::Error, "invalid bucket")
+
+                expect(cli).to receive(:warn).with("Error: invalid bucket")
+
+                expect_cli_to_exit(1) { cli.exists("photo.jpg") }
             end
         end
     end
