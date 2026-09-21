@@ -9,6 +9,10 @@ The project follows the following security practices:
 - **Isolated test environment** — E2E tests use a dedicated bucket
   (`R2_TEST_BUCKET`) separated from the default application bucket.
 
+- **Confirmation of destructive operations** — `r2 delete` asks for
+  confirmation before deleting and requires `--force` in non-interactive
+  executions, avoiding accidental deletions in scripts and pipelines.
+
 - **Ignored environment files** — `.env` files are excluded from version
   control. Only the `.env.example` template is versioned.
 

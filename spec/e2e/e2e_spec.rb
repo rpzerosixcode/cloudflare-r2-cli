@@ -68,6 +68,46 @@ RSpec.describe "R2 CLI", type: :e2e do
             expect(stderr).to be_empty
             expect(stdout).to include(key)
         end
+
+        it "lists only the objects with the given prefix" do
+            file = create_temp_file
+            custom_key = "e2e/#{File.basename(file)}"
+
+            run_cli("upload", file, "--key", custom_key)
+
+            stdout, stderr, status = run_cli("list", "--prefix", "e2e/")
+
+            expect(status).to be_success
+            expect(stderr).to be_empty
+            expect(stdout).to include(custom_key)
+
+            tracked_keys << custom_key
+        end
+    end
+
+    describe "exists" do
+        it "reports that an uploaded object exists" do
+            file = create_temp_file
+            key = File.basename(file)
+
+            run_cli("upload", file)
+
+            stdout, stderr, status = run_cli("exists", key)
+
+            expect(status).to be_success
+            expect(stderr).to be_empty
+            expect(stdout).to include("Object exists: #{key}")
+        end
+
+        it "reports that a missing object does not exist" do
+            missing_key = "e2e/missing-#{SecureRandom.hex(4)}.jpg"
+
+            stdout, stderr, status = run_cli("exists", missing_key)
+
+            expect(status).not_to be_success
+            expect(stderr).to be_empty
+            expect(stdout).to include("Object not found: #{missing_key}")
+        end
     end
 
     describe "delete" do
@@ -77,11 +117,24 @@ RSpec.describe "R2 CLI", type: :e2e do
 
             run_cli("upload", file)
 
-            stdout, stderr, status = run_cli("delete", key)
+            stdout, stderr, status = run_cli("delete", key, "--force")
 
             expect(status).to be_success
             expect(stderr).to be_empty
             expect(stdout).to include("Deleted successfully: #{key}")
+        end
+
+        it "requires --force when the input is not interactive" do
+            file = create_temp_file
+            key = File.basename(file)
+
+            run_cli("upload", file)
+
+            stdout, stderr, status = run_cli("delete", key)
+
+            expect(status).not_to be_success
+            expect(stdout).to be_empty
+            expect(stderr).to include("requires confirmation")
         end
     end
 
