@@ -31,12 +31,25 @@ module R2
         class BucketNotFoundError < Error
         end
 
+        # The requested object does not exist in the bucket.
+        class ObjectNotFoundError < Error
+        end
+
         # Network failure while communicating with Cloudflare R2.
         class NetworkError < Error
         end
 
         # Unclassified failure in the storage layer.
         class StorageError < Error
+        end
+
+        # The confirmation required before a destructive operation could not
+        # be requested, because the execution is not interactive.
+        class ConfirmationRequiredError < Error
+        end
+
+        # The user did not confirm a destructive operation.
+        class AbortedError < Error
         end
     end
 end

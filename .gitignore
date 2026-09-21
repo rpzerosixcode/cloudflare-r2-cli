@@ -5,13 +5,14 @@
 # Build and packaging artifacts
 *.gem
 build/
-/pkg/
-
-# Development and debug files
-.dev/
+pkg/
 
 # Temporary files
 /tmp/
+
+# Development
+.dev/
+.dev/**
 
 # Tools
 /.rubocop_cache/
@@ -25,7 +26,30 @@ build/
 # Operating system
 .DS_Store
 Thumbs.db
+Desktop.ini
 
 # Editors and IDEs
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
+
+# Images
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.webp
+*.svg
+*.bmp
+*.ico
+*.tif
+*.tiff
+*.avif
+
+# Logs
+*.log
+
+# Coverage
+/coverage/
